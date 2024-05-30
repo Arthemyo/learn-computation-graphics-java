@@ -36,14 +36,12 @@ import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.GL_VERSION;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glGetString;
@@ -103,51 +101,80 @@ public class Main implements AutoCloseable, Runnable {
 	private Camera camera;
 
 	private float[] verticesTriangle = new float[] {
-			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-			0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-			0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-			0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-			-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-			-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-			0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-			0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-			0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-			-0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-			-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-			-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-			-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-			-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-			0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-			0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-			0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-			0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-			0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-			0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-			-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-			0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-			0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-			0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-			-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-			-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-			0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-			0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-			0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-			-0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-			-0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-	};
+		// V0 - face back
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+		// V1 - face back
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+		// V2 - face back
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		// V3 - face back
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+
+		// V4 - face front
+		-0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		// V5 - face front
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		// V6 - face front
+		0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+		// V7 - face front
+		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+
+		// V8 - face left
+		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		// V9 - face left
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+		// V10 - face left
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		// V11 - face left
+		-0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+
+		// V12 - face right
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		// V13 - face right
+		0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+		// V14 - face right
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		// V15 - face right
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+
+		// V16 - face top
+		0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+		// V17 - face top
+		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		// V18 - face top
+		0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+		// V19 - face top
+		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+		// V20 - face bottom
+		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+		// V21 - face bottom
+		-0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		// V22 - face bottom
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		// V23 - face bottom
+		0.5f, -0.5f, -0.5f, 0.0f, 1.0f
+};
+
 
 	private Vector3f[] positionCubes = {
 			new Vector3f(0.0f, 0.0f, 0.0f),
 	};
 
 	private int indices[] = {
-			0, 1, 3,
-			3, 2, 1 };
+				// Back face
+                0, 1, 3, 3, 1, 2,
+				// Front face
+				4, 7, 5, 5, 6, 7,
+				// Left face
+				8, 9, 10, 10, 8, 11,
+				// Right face
+				12, 13, 14, 14, 15, 12,
+				// Top face
+				16, 17, 19, 19, 18, 16,
+				// Bottom face
+				20, 21, 22, 22, 23, 20
+			 };
 
 	public static void main(String... args) {
 		try (Main main = new Main()) {
@@ -216,6 +243,8 @@ public class Main implements AutoCloseable, Runnable {
 
 		loadTexture();
 		glEnable(GL30.GL_DEPTH_TEST);
+		
+		GL30.glBufferData(GL30.GL_ELEMENT_ARRAY_BUFFER, indices, GL30.GL_STATIC_DRAW);
 
 		glfwSetKeyCallback(windowHandle, (windowHandle, key, scancode, action, mods) -> {
 
@@ -254,7 +283,6 @@ public class Main implements AutoCloseable, Runnable {
 			glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, idEBO);
 
 			GL30.glBindVertexArray(idVAO);
-			GL30.glDrawElements(GL30.GL_TRIANGLES, indices.length, GL30.GL_UNSIGNED_INT, 0);
 			transfomation();
 
 			shader.unbind();
@@ -301,7 +329,6 @@ public class Main implements AutoCloseable, Runnable {
 			// Put into the buffer data the vertices
 			glBufferData(GL_ARRAY_BUFFER, positionsBuffer, GL_STATIC_DRAW);
 			glBufferData(GL_ARRAY_BUFFER, verticesTriangle, GL_STATIC_DRAW);
-			GL30.glBufferData(GL30.GL_ELEMENT_ARRAY_BUFFER, indices, GL30.GL_STATIC_DRAW);
 
 			// We now tell to opengl how to interpret the verticeTriangle;
 			// Position of vertex
@@ -389,7 +416,7 @@ public class Main implements AutoCloseable, Runnable {
 				float angle = 20.0f * i;
 				model.rotate((float) (glfwGetTime() * Math.toRadians(angle)), new Vector3f(1.0f, 0.0f, 0.0f));
 				shader.setMat4("model", model);
-				glDrawArrays(GL_TRIANGLES, 0, 36);
+				GL30.glDrawElements(GL30.GL_TRIANGLES, indices.length, GL30.GL_UNSIGNED_INT, 0);
 			}
 
 			shader.setMat4("projection", projection);
