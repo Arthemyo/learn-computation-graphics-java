@@ -14,7 +14,6 @@ import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
 import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwInit;
@@ -35,34 +34,16 @@ import static org.lwjgl.glfw.GLFWErrorCallback.createPrint;
 import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.GL_VERSION;
-import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glGetString;
-import static org.lwjgl.opengl.GL11.glTexImage2D;
-import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.stb.STBImage.stbi_failure_reason;
-import static org.lwjgl.stb.STBImage.stbi_image_free;
-import static org.lwjgl.stb.STBImage.stbi_load;
-import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.joml.Matrix4f;
@@ -72,6 +53,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
+
+import game.test.com.game.voxel.model.shapes.Cube;
 
 /**
  * @author Paul Nelson Baker
@@ -88,93 +71,11 @@ public class Main implements AutoCloseable, Runnable {
 	private static final int windowWidth = 800;
 	private static final int windowHeight = 600;
 	private long windowHandle;
-	private int vertexShaderId;
-	private int fragementShaderId;
-	private int idVAO;
-	private int idEBO;
 
 	private Shader shader;
-	private IntBuffer width, height, nrChannels;
-	private int textureId;
-	private int texture2;
-
 	private Camera camera;
 
-	private float[] verticesTriangle = new float[] {
-		// V0 - face back
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-		// V1 - face back
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-		// V2 - face back
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		// V3 - face back
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-
-		// V4 - face front
-		-0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-		// V5 - face front
-		0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		// V6 - face front
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-		// V7 - face front
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-
-		// V8 - face left
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		// V9 - face left
-		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-		// V10 - face left
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		// V11 - face left
-		-0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-
-		// V12 - face right
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		// V13 - face right
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-		// V14 - face right
-		0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		// V15 - face right
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-
-		// V16 - face top
-		0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-		// V17 - face top
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		// V18 - face top
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-		// V19 - face top
-		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-		// V20 - face bottom
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-		// V21 - face bottom
-		-0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-		// V22 - face bottom
-		0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		// V23 - face bottom
-		0.5f, -0.5f, -0.5f, 0.0f, 1.0f
-};
-
-
-	private Vector3f[] positionCubes = {
-			new Vector3f(0.0f, 0.0f, 0.0f),
-	};
-
-	private int indices[] = {
-				// Back face
-                0, 1, 3, 3, 1, 2,
-				// Front face
-				4, 7, 5, 5, 6, 7,
-				// Left face
-				8, 9, 10, 10, 8, 11,
-				// Right face
-				12, 13, 14, 14, 15, 12,
-				// Top face
-				16, 17, 19, 19, 18, 16,
-				// Bottom face
-				20, 21, 22, 22, 23, 20
-			 };
+	private Cube cubo;
 
 	public static void main(String... args) {
 		try (Main main = new Main()) {
@@ -228,23 +129,21 @@ public class Main implements AutoCloseable, Runnable {
 			glViewport(0, 0, width, height);
 		});
 
-		defineBuffer();
-
-		camera = new Camera(new Vector3f(0.0f, 0.0f, 4.0f),
+		camera = new Camera(new Vector3f(0.0f, 0.0f, 6.0f),
 				new Vector3f(0.0f, 1.0f, 0.0f),
 				-90.0f, 0.0f, 0.5f);
 
 		camera.setCameraSpeed(2.5f);
 
+		int programId = GL30.glCreateProgram();
 		shader = new Shader("src\\common\\shaders\\vertexShader.glsl",
-				"src\\common\\shaders\\fragmentShader.glsl");
-		vertexShaderId = shader.getVertexShaderId();
-		fragementShaderId = shader.getFragmentShaderId();
+				"src\\common\\shaders\\fragmentShader.glsl", programId);
 
-		loadTexture();
+		cubo = new Cube(shader);
+
 		glEnable(GL30.GL_DEPTH_TEST);
-		
-		GL30.glBufferData(GL30.GL_ELEMENT_ARRAY_BUFFER, indices, GL30.GL_STATIC_DRAW);
+		glEnable(GL30.GL_CULL_FACE);
+		GL30.glCullFace(GL30.GL_BACK);
 
 		glfwSetKeyCallback(windowHandle, (windowHandle, key, scancode, action, mods) -> {
 
@@ -271,18 +170,6 @@ public class Main implements AutoCloseable, Runnable {
 
 			shader.bind();
 
-			GL30.glActiveTexture(GL30.GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textureId);
-
-			GL30.glActiveTexture(GL30.GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, texture2);
-
-			shader.setInt("texture1", 0);
-			shader.setInt("texture2", 1);
-
-			glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, idEBO);
-
-			GL30.glBindVertexArray(idVAO);
 			transfomation();
 
 			shader.unbind();
@@ -296,127 +183,31 @@ public class Main implements AutoCloseable, Runnable {
 	public void close() {
 		glfwFreeCallbacks(windowHandle);
 		glfwDestroyWindow(windowHandle);
-		GL30.glDeleteShader(vertexShaderId);
-		GL30.glDeleteShader(fragementShaderId);
-		glDeleteTextures(textureId);
-		glDeleteTextures(texture2);
-		GL30.glDeleteVertexArrays(idVAO);
-		GL30.glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, 0);
+		shader.deleteShader();
+		cubo.deleteBuffers();
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
 	}
 
-	public void defineBuffer() {
-
-		// Generate a id for my VBO (Vertex Buffer Object)
-		int idVBO = glGenBuffers();
-		idVAO = GL30.glGenVertexArrays();
-		idEBO = GL30.glGenBuffers();
-
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-
-			FloatBuffer positionsBuffer = stack.callocFloat(verticesTriangle.length);
-			positionsBuffer.put(0, verticesTriangle);
-
-			// Bind my VBO with real buffer
-			GL30.glBindVertexArray(idVAO);
-			glBindBuffer(GL_ARRAY_BUFFER, idVBO);
-
-			glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, idEBO);
-
-			// Put into the buffer data the vertices
-			glBufferData(GL_ARRAY_BUFFER, positionsBuffer, GL_STATIC_DRAW);
-			glBufferData(GL_ARRAY_BUFFER, verticesTriangle, GL_STATIC_DRAW);
-
-			// We now tell to opengl how to interpret the verticeTriangle;
-			// Position of vertex
-			GL30.glVertexAttribPointer(0, 3, GL30.GL_FLOAT, false, 5 * Float.BYTES, 0);
-			GL30.glEnableVertexAttribArray(0);
-
-			// Color of vertex
-			GL30.glVertexAttribPointer(1, 3, GL30.GL_FLOAT, false, 5 * Float.BYTES, 12);
-			GL30.glEnableVertexAttribArray(1);
-
-			// Coordinate of textures
-			// GL30.glVertexAttribPointer(2, 2, GL30.GL_FLOAT, false, 32, 24);
-			// GL30.glEnableVertexAttribArray(2);
-
-		} catch (Exception e) {
-			throw new RuntimeException("Deu merda: " + e.getMessage());
-		}
-	}
-
-	public void loadTexture() {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			width = stack.mallocInt(1);
-			height = stack.mallocInt(1);
-			nrChannels = stack.mallocInt(1);
-
-			IntBuffer width2 = stack.mallocInt(1);
-			IntBuffer height2 = stack.mallocInt(1);
-			IntBuffer nrChannels2 = stack.mallocInt(1);
-
-			ByteBuffer buf = stbi_load("src\\common\\textures\\container.jpg", width, height, nrChannels, 0);
-			stbi_set_flip_vertically_on_load(true);
-			ByteBuffer buf2 = stbi_load("src\\common\\textures\\awesomeface.png", width2, height2, nrChannels2, 0);
-
-			int w2 = width2.get();
-			int h2 = height2.get();
-
-			int w = width.get();
-			int h = height.get();
-
-			if (buf == null || buf2 == null) {
-				throw new RuntimeException("Image file not loaded: "
-						+ stbi_failure_reason());
-			}
-
-			// Generate and bind texture 1
-			textureId = glGenTextures();
-			glBindTexture(GL_TEXTURE_2D, textureId);
-			glTexParameteri(GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, GL30.GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, GL30.GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_LINEAR);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL30.GL_RGB, w, h, 0,
-					GL30.GL_RGB, GL_UNSIGNED_BYTE, buf);
-			GL30.glGenerateMipmap(GL_TEXTURE_2D);
-
-			// Generate and bind texture 2
-			texture2 = glGenTextures();
-			glBindTexture(GL_TEXTURE_2D, texture2);
-			glTexParameteri(GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, GL30.GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, GL30.GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_LINEAR);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL30.GL_RGBA, w2, h2, 0,
-					GL30.GL_RGBA, GL_UNSIGNED_BYTE, buf2);
-			GL30.glGenerateMipmap(GL_TEXTURE_2D);
-
-			stbi_image_free(buf);
-			stbi_image_free(buf2);
-		}
-	}
-
 	public void transfomation() {
-		try (MemoryStack stack = MemoryStack.stackPush()){
+		try (MemoryStack stack = MemoryStack.stackPush()) {
 
 			Matrix4f view = camera.getLookAt();
 
-			float FOV = camera.getZoom();  
+			float FOV = camera.getZoom();
 			float AspectRatio = windowWidth / windowHeight;
 
 			Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
 
-			for (int i = 0; i < positionCubes.length; i++) {
-				Matrix4f model = new Matrix4f().identity();
-				model.translate(positionCubes[i]);
-				float angle = 20.0f * i;
-				model.rotate((float) (glfwGetTime() * Math.toRadians(angle)), new Vector3f(1.0f, 0.0f, 0.0f));
-				shader.setMat4("model", model);
-				GL30.glDrawElements(GL30.GL_TRIANGLES, indices.length, GL30.GL_UNSIGNED_INT, 0);
+			for (int i = 0; i < 1; i++) {
+				for (int j = 0; j < 1; j++) {
+					for (int k = 0; k < 1; k++) {
+						cubo.drawCube();
+						Matrix4f model = new Matrix4f().identity();
+						model.translate(new Vector3f(i, j, k));
+						shader.setMat4("model", model);
+					}
+				}
 			}
 
 			shader.setMat4("projection", projection);

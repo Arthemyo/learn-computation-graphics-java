@@ -20,15 +20,15 @@ public class Shader {
 	private String vertexShaderSource;
 	private String fragmentShaderSource;
 	
-	public Shader(String vertexShaderSourcePath, String fragmentShaderSourcePath) throws IOException {
+	public Shader(String vertexShaderSourcePath, String fragmentShaderSourcePath, int shaderProgramId) throws IOException {
+
+		this.programId = shaderProgramId;
 
 		InputStream inputStream = new FileInputStream(vertexShaderSourcePath);
 		this.vertexShaderSource = Utils.readFile(inputStream);
 
 		InputStream inputStream2 = new FileInputStream(fragmentShaderSourcePath);
 		this.fragmentShaderSource = Utils.readFile(inputStream2);
-
-		programId = GL30.glCreateProgram();
 
 		this.vertexShaderId = this.createShader(vertexShaderSource, GL30.GL_VERTEX_SHADER);
 		this.fragmentShaderId = this.createShader(fragmentShaderSource, GL30.GL_FRAGMENT_SHADER);
@@ -110,5 +110,15 @@ public class Shader {
 	public int getFragmentShaderId() {
 		return fragmentShaderId;
 	}
+
+	public void setProgramId(int programId) {
+		this.programId = programId;
+	}
+
+	public void deleteShader(){
+		GL30.glDeleteShader(vertexShaderId);
+		GL30.glDeleteShader(fragmentShaderId);
+	}
+
 
 }
