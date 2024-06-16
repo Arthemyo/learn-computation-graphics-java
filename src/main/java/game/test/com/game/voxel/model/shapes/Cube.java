@@ -19,9 +19,6 @@ import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -46,8 +43,6 @@ import java.nio.IntBuffer;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 
-import game.test.com.game.voxel.Shader;
-
 public class Cube {
     private int idVAO;
     private int idEBO;
@@ -57,63 +52,61 @@ public class Cube {
     private int textureId;
     private int texture2;
 
-    private Shader shader;
-
     private float[] verticesTriangle = new float[] {
 
-            // V0 - face back
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 0.0f,
-            // V1 - face back
-            0.5f, -0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 0.0f,
-            // V2 - face back
-            0.5f, 0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 1.0f,
-            // V3 - face back
-            -0.5f, 0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 1.0f,
+            // V0 - face back    // Normals
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            // V1 - face back    // Normals
+            0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,
+            // V2 - face back    // Normals
+            0.5f, 0.5f, -0.5f,   0.0f, 0.0f, -1.0f,
+            // V3 - face back    // Normals
+            -0.5f, 0.5f, -0.5f,  0.0f, 0.0f, -1.0f,
 
-            // V4 - face front
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 0.0f,
-            // V5 - face front
-            0.5f, -0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 0.0f,
-            // V6 - face front
-            0.5f, 0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 1.0f,
-            // V7 - face front
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 1.0f,
+            // V4 - face front   // Normals
+            -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, 1.0f,
+            // V5 - face front   // Normals
+            0.5f, -0.5f, 0.5f,   0.0f, 0.0f, 1.0f,
+            // V6 - face front   // Normals
+            0.5f, 0.5f, 0.5f,    0.0f, 0.0f, 1.0f,
+            // V7 - face front   // Normals
+            -0.5f, 0.5f, 0.5f,   0.0f, 0.0f, 1.0f,
 
             // V8 - face left
-            -0.5f, 0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,
             // V9 - face left
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f,   -1.0f, 0.0f, 0.0f,
             // V10 - face left
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f,  -1.0f, 0.0f, 0.0f,
             // V11 - face left
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
 
             // V12 - face right
-            0.5f, 0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, -0.5f,   1.0f, 0.0f, 0.0f,
             // V13 - face right
-            0.5f, 0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f,    1.0f, 0.0f, 0.0f,
             // V14 - face right
-            0.5f, -0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f,   1.0f, 0.0f, 0.0f,
             // V15 - face right
-            0.5f, -0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
 
             // V16 - face top
-            0.5f, 0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f,   0.0f, 1.0f, 0.0f,
             // V17 - face top
-            -0.5f, 0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
             // V18 - face top
-            0.5f, 0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f,    0.0f, 1.0f, 0.0f,
             // V19 - face top
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f,   0.0f, 1.0f, 0.0f,
 
             // V20 - face bottom
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,   0.0f, -1.0f, 0.0f,
             // V21 - face bottom
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f,   0.0f, -1.0f, 0.0f,
             // V22 - face bottom
-            0.5f, -0.5f, 0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f,   0.0f, -1.0f, 0.0f,
             // V23 - face bottom
-            0.5f, -0.5f, -0.5f, 0.0f, 0.3f, 0.0f, 0.0f, 1.0f
+            0.5f, -0.5f, -0.5f,   0.0f, -1.0f, 0.0f,
     };
 
     private int indices[] = {
@@ -131,25 +124,14 @@ public class Cube {
             20, 23, 22, 22, 21, 20
     };
 
-    public Cube(Shader shader) {
+    public Cube() {
         idVBO = glGenBuffers();
         idVAO = glGenVertexArrays();
         idEBO = glGenBuffers();
         this.defineBuffers();
-        this.loadTexture();
-        this.shader = shader;
     }
 
     public void drawCube() {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureId);
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-
-        shader.setInt("texture1", 0);
-        shader.setInt("texture2", 1);
-        
         glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
     }
 
@@ -158,7 +140,6 @@ public class Cube {
         try (MemoryStack stack = MemoryStack.stackPush()) {
 
             FloatBuffer positionsBuffer = stack.callocFloat(verticesTriangle.length);
-            System.out.println(verticesTriangle.length);
             positionsBuffer.put(0, verticesTriangle);
             
             // Bind my VBO with real buffer
@@ -172,16 +153,11 @@ public class Cube {
 
             // We now tell to opengl how to interpret the verticeTriangle;
             // Position of vertex
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * Float.BYTES, 0 * Float.BYTES);
+            glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * Float.BYTES, 0 * Float.BYTES); 
             glEnableVertexAttribArray(0);
 
-            // Color of vertex
-            glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
+            glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
             glEnableVertexAttribArray(1);
-
-            //Coordinate of textures
-            glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * Float.BYTES, 6 * Float.BYTES);
-            glEnableVertexAttribArray(2);
 
         } catch (Exception e) {
             throw new RuntimeException("Draw Cube Failure: " + e.getMessage());

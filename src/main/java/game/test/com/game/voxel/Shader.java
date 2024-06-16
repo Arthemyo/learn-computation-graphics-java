@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.FloatBuffer;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -19,10 +20,10 @@ public class Shader {
 	private int fragmentShaderId;
 	private String vertexShaderSource;
 	private String fragmentShaderSource;
-	
-	public Shader(String vertexShaderSourcePath, String fragmentShaderSourcePath, int shaderProgramId) throws IOException {
 
-		this.programId = shaderProgramId;
+	public Shader(String vertexShaderSourcePath, String fragmentShaderSourcePath) throws IOException {
+
+		this.programId = GL30.glCreateProgram();
 
 		InputStream inputStream = new FileInputStream(vertexShaderSourcePath);
 		this.vertexShaderSource = Utils.readFile(inputStream);
@@ -44,7 +45,7 @@ public class Shader {
 			throw new RuntimeException("Error validating Shader code: " + GL30.glGetProgramInfoLog(programId, 1024));
 		}
 	}
-	
+
 	public int createShader(String shaderCode, int shaderType) {
 		int shaderId = GL30.glCreateShader(shaderType);
 
@@ -66,37 +67,46 @@ public class Shader {
 		}
 
 		GL30.glAttachShader(programId, shaderId);
-		
+
 		return shaderId;
 	}
-	
+
 	public void bind() {
 		GL30.glUseProgram(programId);
 	}
-	
+
 	public void unbind() {
 		GL30.glUseProgram(0);
 	}
 
-	public void setBool(String name, int value){
+	public void setBool(String name, int value) {
 		GL30.glUniform1i(GL30.glGetUniformLocation(programId, name), value);
 	}
 
-	public void setInt(String name, int value){
+	public void setInt(String name, int value) {
 		GL30.glUniform1i(GL30.glGetUniformLocation(programId, name), value);
 	}
 
-	public void setFloat(String name, float value){
+	public void setFloat(String name, float value) {
 		GL30.glUniform1f(GL30.glGetUniformLocation(programId, name), value);
 	}
 
-	public void setMat4(String name, Matrix4f mat4){
+	public void setMat4(String name, Matrix4f mat4) {
 		int mat4Loc = GL20.glGetUniformLocation(programId, name);
 		FloatBuffer mat4Buffer = BufferUtils.createFloatBuffer(16);
 
 		mat4.get(mat4Buffer);
 
 		GL20.glUniformMatrix4fv(mat4Loc, false, mat4Buffer);
+	}
+
+	public void setVec3(String name, Vector3f vec3) {
+		int vec3Loc = GL20.glGetUniformLocation(programId, name);
+		FloatBuffer vec3Buffer = BufferUtils.createFloatBuffer(3);
+
+		vec3.get(vec3Buffer);
+
+		GL20.glUniform3fv(vec3Loc, vec3Buffer);
 	}
 
 	public int getProgramId() {
@@ -115,10 +125,9 @@ public class Shader {
 		this.programId = programId;
 	}
 
-	public void deleteShader(){
+	public void deleteShader() {
 		GL30.glDeleteShader(vertexShaderId);
 		GL30.glDeleteShader(fragmentShaderId);
 	}
-
 
 }
