@@ -68,8 +68,8 @@ import game.test.com.game.voxel.model.shapes.Cube;
 public class Main implements AutoCloseable, Runnable {
 
     private static final String windowTitle = "Hello, World!";
-    private static final int windowWidth = 800;
-    private static final int windowHeight = 600;
+    private static final int windowWidth = 1200;
+    private static final int windowHeight = 800;
     private long windowHandle;
 
     private Shader shader;
@@ -132,8 +132,8 @@ public class Main implements AutoCloseable, Runnable {
             glViewport(0, 0, width, height);
         });
 
-        camera = new Camera(new Vector3f(0.0f, 3.0f, 10.0f),
-                new Vector3f(0.0f, 1.0f, 0.0f),
+        camera = new Camera(new Vector3f(2.8f, 3.0f, 13.0f),
+                new Vector3f(0.0f, 1.0f, .0f),
                 -90.0f, -10.0f, 0.5f);
 
         camera.setCameraSpeed(2.5f);
@@ -206,22 +206,26 @@ public class Main implements AutoCloseable, Runnable {
 
             // Draw Cube Object
             shader.bind();
-            cubo.drawCube();
-            Matrix4f model = new Matrix4f().identity();
-            model.translate(new Vector3f(0.0f, 0.0f, 0.0f));
-            model.scale(6.0f, 1.0f, 6.0f);
+
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 6; j++) {
+                    for (int k = 0; k < 6; k++) {
+                        cubo.drawCube();
+                        Matrix4f model = new Matrix4f().identity();
+                        model.translate(new Vector3f(i, 0.0f, k));
+                        shader.setMat4("model", model);
+                    }
+                }
+            }
 
             shader.setVec3("objectColor", colorObject);
             shader.setVec3("lightColor", lightColor);
             shader.setVec3("lightPos", lightPos);
             shader.setVec3("viewPos", camera.getCameraPos());
 
-            shader.setMat4("model", model);
             shader.setMat4("projection", projection);
             shader.setMat4("view", view);
-
             shader.unbind();
-
 
             // Draw Lighting Cube
             lightShader.bind();
