@@ -21,7 +21,6 @@ import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
@@ -32,14 +31,8 @@ import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.glfw.GLFWErrorCallback.createPrint;
 import static org.lwjgl.opengl.GL.createCapabilities;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_VERSION;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glGetString;
-import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -68,8 +61,8 @@ import game.test.com.game.voxel.model.shapes.Cube;
 public class Main implements AutoCloseable, Runnable {
 
     private static final String windowTitle = "Hello, World!";
-    private static final int windowWidth = 1200;
-    private static final int windowHeight = 800;
+    private static final int windowWidth = 800;
+    private static final int windowHeight = 600;
     private long windowHandle;
 
     private Shader shader;
@@ -132,11 +125,11 @@ public class Main implements AutoCloseable, Runnable {
             glViewport(0, 0, width, height);
         });
 
-        camera = new Camera(new Vector3f(2.8f, 3.0f, 13.0f),
+        camera = new Camera(new Vector3f(0.0f, 3.0f, 8.0f),
                 new Vector3f(0.0f, 1.0f, .0f),
                 -90.0f, -10.0f, 0.5f);
 
-        camera.setCameraSpeed(2.5f);
+        camera.setCameraSpeed(1.8f);
 
         shader = new Shader("src\\common\\shaders\\vertexShader.glsl",
                 "src\\common\\shaders\\fragmentShader.glsl");
@@ -149,7 +142,7 @@ public class Main implements AutoCloseable, Runnable {
 
         glEnable(GL30.GL_DEPTH_TEST);
 
-        glfwSetKeyCallback(windowHandle, (windowHandle, key, scancode, action, mods) -> {
+        GLFW.glfwSetKeyCallback(windowHandle, (windowHandle, key, scancode, action, mods) -> {
 
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
                 glfwSetWindowShouldClose(windowHandle, true);
@@ -197,31 +190,50 @@ public class Main implements AutoCloseable, Runnable {
             Matrix4f view = camera.getLookAt();
 
             float FOV = camera.getZoom();
-            float AspectRatio = windowWidth / windowHeight;
+            float AspectRatio = (float) windowWidth / windowHeight;
             Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
 
             Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
             Vector3f lightPos = new Vector3f(1.2f, (float) Math.sin(GLFW.glfwGetTime()) + 1.8f, 1.0f);
             Vector3f colorObject = new Vector3f(1.0f, 0.5f, 0.31f);
 
+            Vector3f diffuseColor = new Vector3f(lightColor).mul(0.5f);
+            Vector3f ambientColor = new Vector3f(diffuseColor).mul(0.2f);
+
             // Draw Cube Object
             shader.bind();
 
-            for (int i = 0; i < 6; i++) {
-                for (int j = 0; j < 6; j++) {
-                    for (int k = 0; k < 6; k++) {
+            for (int i = 0; i < 6; i++){
+                for(int j = 0; j < 1; j++){
+                    for(int k = 0; k < 6; k++){
                         cubo.drawCube();
+
+                        GL30.glActiveTexture(GL30.GL_TEXTURE0);
+                        glBindTexture(GL_TEXTURE_2D, cubo.getTextureId());
+                        shader.setInt("material.diffuse", 0);
+
+                        GL30.glActiveTexture(GL30.GL_TEXTURE1);
+                        glBindTexture(GL_TEXTURE_2D, cubo.getTextureId2());
+                        shader.setInt("material.specular", 1);
+
                         Matrix4f model = new Matrix4f().identity();
-                        model.translate(new Vector3f(i, 0.0f, k));
+                        model.translate(new Vector3f(i, 0, k));
                         shader.setMat4("model", model);
                     }
                 }
             }
 
+
             shader.setVec3("objectColor", colorObject);
             shader.setVec3("lightColor", lightColor);
-            shader.setVec3("lightPos", lightPos);
             shader.setVec3("viewPos", camera.getCameraPos());
+
+            shader.setFloat("material.shininess", 32.0f);
+
+            shader.setVec3("light.ambient", new Vector3f(ambientColor));
+            shader.setVec3("light.diffuse", new Vector3f(diffuseColor));
+            shader.setVec3("light.specular", new Vector3f(1.0f, 1.0f, 1.0f));
+            shader.setVec3("light.position", lightPos);
 
             shader.setMat4("projection", projection);
             shader.setMat4("view", view);
