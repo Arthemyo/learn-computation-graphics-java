@@ -1,48 +1,26 @@
 package game.test.com.game.voxel.model.shapes;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_LINEAR;
-import static org.lwjgl.opengl.GL11.GL_REPEAT;
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glDeleteTextures;
-import static org.lwjgl.opengl.GL11.glDrawElements;
-import static org.lwjgl.opengl.GL11.glGenTextures;
-import static org.lwjgl.opengl.GL11.glTexImage2D;
-import static org.lwjgl.opengl.GL11.glTexParameteri;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenerateMipmap;
-import static org.lwjgl.stb.STBImage.*;
+import game.test.com.game.voxel.Shader;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryStack;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.stb.STBImage.*;
 
 public class Cube {
     private int idVAO;
     private int idEBO;
     private int idVBO;
+
+    private Shader shader;
 
     private IntBuffer width, height, nrChannels;
     private int textureId, textureId2;
@@ -119,15 +97,27 @@ public class Cube {
             20, 23, 22, 22, 21, 20
     };
 
-    public Cube() {
+    public Cube(Shader shader) {
         idVBO = glGenBuffers();
         idVAO = glGenVertexArrays();
         idEBO = glGenBuffers();
         this.defineBuffers();
         this.loadTexture();
+        this.shader = shader;
     }
 
     public void drawCube() {
+
+        if(this.shader != null){
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, this.textureId);
+            shader.setInt("material.diffuse", 0);
+
+            GL30.glActiveTexture(GL30.GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, this.textureId2);
+            shader.setInt("material.specular", 1);
+        }
+
         glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
     }
 
@@ -174,7 +164,7 @@ public class Cube {
             IntBuffer nrChannels2 = stack.mallocInt(1);
 
             ByteBuffer buf = stbi_load("src\\common\\textures\\container2.png", width, height, nrChannels, 4);
-            stbi_set_flip_vertically_on_load(true);
+//            stbi_set_flip_vertically_on_load(true);
             ByteBuffer buf2 = stbi_load("src\\common\\textures\\container2_specular.png", width2, height2, nrChannels2, 4);
 
             int w2 = width2.get();

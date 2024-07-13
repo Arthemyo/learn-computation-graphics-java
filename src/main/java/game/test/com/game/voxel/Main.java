@@ -54,9 +54,9 @@ import game.test.com.game.voxel.model.shapes.Cube;
  * @see <a href="https://github.com/paul-nelson-baker/">GitHub</a>
  * @see <a href="https://www.linkedin.com/in/paul-n-baker/">LinkedIn</a>
  * @since 2019-05
- *        <p>
- *        Modified from <a href="https://www.lwjgl.org/guide">original
- *        example</a>
+ * <p>
+ * Modified from <a href="https://www.lwjgl.org/guide">original
+ * example</a>
  */
 public class Main implements AutoCloseable, Runnable {
 
@@ -72,6 +72,19 @@ public class Main implements AutoCloseable, Runnable {
 
     private Cube cubo;
     private Cube lightCube;
+
+    private Vector3f[] cubePosition = {
+            new Vector3f(1.0f, 4.0f, 3.0f),
+            new Vector3f(2.0f, 3.0f, 1.0f),
+            new Vector3f(0.0f, 4.0f, 6.0f),
+            new Vector3f(5.0f, 6.0f, 7.0f),
+            new Vector3f(7.0f, 1.0f, 5.0f),
+            new Vector3f(2.0f, 2.0f, 8.0f),
+            new Vector3f(1.0f, 1.0f, 3.0f),
+            new Vector3f(1.0f, 0.0f, -5.0f),
+            new Vector3f(3.0f, 1.0f, 1.0f),
+            new Vector3f(5.0f, 5.0f, 1.0f)
+    };
 
     public static void main(String... args) {
         try (Main main = new Main()) {
@@ -137,8 +150,8 @@ public class Main implements AutoCloseable, Runnable {
         lightShader = new Shader("src\\common\\shaders\\lightVertexShader.glsl",
                 "src\\common\\shaders\\lightFragmentShader.glsl");
 
-        cubo = new Cube();
-        lightCube = new Cube();
+        cubo = new Cube(shader);
+        lightCube = new Cube(lightShader);
 
         glEnable(GL30.GL_DEPTH_TEST);
 
@@ -194,7 +207,7 @@ public class Main implements AutoCloseable, Runnable {
             Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
 
             Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
-            Vector3f lightPos = new Vector3f(1.2f, (float) Math.sin(GLFW.glfwGetTime()) + 1.8f, 1.0f);
+            Vector3f lightPos = new Vector3f(-0.2f, -1.0f, -0.3f);
             Vector3f colorObject = new Vector3f(1.0f, 0.5f, 0.31f);
 
             Vector3f diffuseColor = new Vector3f(lightColor).mul(0.5f);
@@ -203,24 +216,16 @@ public class Main implements AutoCloseable, Runnable {
             // Draw Cube Object
             shader.bind();
 
-            for (int i = 0; i < 6; i++){
-                for(int j = 0; j < 1; j++){
-                    for(int k = 0; k < 6; k++){
-                        cubo.drawCube();
+            for (int i = 0; i < 10; i++) {
 
-                        GL30.glActiveTexture(GL30.GL_TEXTURE0);
-                        glBindTexture(GL_TEXTURE_2D, cubo.getTextureId());
-                        shader.setInt("material.diffuse", 0);
+                Matrix4f model = new Matrix4f().identity();
+                model.translate(cubePosition[i]);
+                float angle = 20.0f * i;
+                model.rotate((float) Math.toRadians(angle), new Vector3f(1.0f, 0.3f, 0.5f));
 
-                        GL30.glActiveTexture(GL30.GL_TEXTURE1);
-                        glBindTexture(GL_TEXTURE_2D, cubo.getTextureId2());
-                        shader.setInt("material.specular", 1);
+                shader.setMat4("model", model);
+                cubo.drawCube();
 
-                        Matrix4f model = new Matrix4f().identity();
-                        model.translate(new Vector3f(i, 0, k));
-                        shader.setMat4("model", model);
-                    }
-                }
             }
 
 
@@ -228,28 +233,16 @@ public class Main implements AutoCloseable, Runnable {
             shader.setVec3("lightColor", lightColor);
             shader.setVec3("viewPos", camera.getCameraPos());
 
-            shader.setFloat("material.shininess", 32.0f);
+            shader.setFloat("material.shininess", 64.0f);
 
             shader.setVec3("light.ambient", new Vector3f(ambientColor));
             shader.setVec3("light.diffuse", new Vector3f(diffuseColor));
             shader.setVec3("light.specular", new Vector3f(1.0f, 1.0f, 1.0f));
-            shader.setVec3("light.position", lightPos);
+            shader.setVec3("light.direction", lightPos);
 
             shader.setMat4("projection", projection);
             shader.setMat4("view", view);
             shader.unbind();
-
-            // Draw Lighting Cube
-            lightShader.bind();
-            lightCube.drawCube();
-            Matrix4f modelLightCube = new Matrix4f().identity();
-            modelLightCube.translate(lightPos);
-            modelLightCube.scale(0.2f);
-
-            lightShader.setMat4("model", modelLightCube);
-            lightShader.setMat4("projection", projection);
-            lightShader.setMat4("view", view);
-            lightShader.unbind();
 
             camera.processInput(windowHandle);
 
