@@ -74,16 +74,16 @@ public class Main implements AutoCloseable, Runnable {
     private Cube lightCube;
 
     private Vector3f[] cubePosition = {
-            new Vector3f(1.0f, 4.0f, 3.0f),
-            new Vector3f(2.0f, 3.0f, 1.0f),
-            new Vector3f(0.0f, 4.0f, 6.0f),
-            new Vector3f(5.0f, 6.0f, 7.0f),
-            new Vector3f(7.0f, 1.0f, 5.0f),
-            new Vector3f(2.0f, 2.0f, 8.0f),
-            new Vector3f(1.0f, 1.0f, 3.0f),
-            new Vector3f(1.0f, 0.0f, -5.0f),
-            new Vector3f(3.0f, 1.0f, 1.0f),
-            new Vector3f(5.0f, 5.0f, 1.0f)
+            new Vector3f(0.0f, 0.0f, 0.0f),
+            new Vector3f(2.0f, 5.0f, -15.0f),
+            new Vector3f(-1.5f, -2.2f, -2.5f),
+            new Vector3f(-3.8f, -2.0f, -12.3f),
+            new Vector3f(2.4f, -0.4f, -3.5f),
+            new Vector3f(-1.7f, 3.0f, -7.5f),
+            new Vector3f(1.3f, -2.0f, -2.5f),
+            new Vector3f(1.5f, 2.0f, -2.5f),
+            new Vector3f(1.5f, 0.2f, -1.5f),
+            new Vector3f(-1.3f, 1.0f, -1.5f)
     };
 
     public static void main(String... args) {
@@ -238,11 +238,26 @@ public class Main implements AutoCloseable, Runnable {
             shader.setVec3("light.ambient", new Vector3f(ambientColor));
             shader.setVec3("light.diffuse", new Vector3f(diffuseColor));
             shader.setVec3("light.specular", new Vector3f(1.0f, 1.0f, 1.0f));
-            shader.setVec3("light.direction", lightPos);
+            shader.setVec3("light.position", lightPos);
+
+            shader.setFloat("light.constant", 1.0f);
+            shader.setFloat("light.linear", 0.09f);
+            shader.setFloat("light.quadratic", 0.032f);
+
 
             shader.setMat4("projection", projection);
             shader.setMat4("view", view);
             shader.unbind();
+
+            lightShader.bind();
+            lightCube.drawCube();
+            Matrix4f modelLightCube = new Matrix4f().identity();
+            modelLightCube.translate(lightPos);
+            modelLightCube.scale(0.2f);
+            lightShader.setMat4("model", modelLightCube);
+            lightShader.setMat4("projection", projection);
+            lightShader.setMat4("view", view);
+            lightShader.unbind();
 
             camera.processInput(windowHandle);
 
