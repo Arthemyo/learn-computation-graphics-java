@@ -207,7 +207,7 @@ public class Main implements AutoCloseable, Runnable {
             Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
 
             Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
-            Vector3f lightPos = new Vector3f(-0.2f, -1.0f, -0.3f);
+            Vector3f lightPos = new Vector3f(-0.2f, 1.0f, 2.0f);
             Vector3f colorObject = new Vector3f(1.0f, 0.5f, 0.31f);
 
             Vector3f diffuseColor = new Vector3f(lightColor).mul(0.5f);
@@ -228,7 +228,6 @@ public class Main implements AutoCloseable, Runnable {
 
             }
 
-
             shader.setVec3("objectColor", colorObject);
             shader.setVec3("lightColor", lightColor);
             shader.setVec3("viewPos", camera.getCameraPos());
@@ -238,12 +237,15 @@ public class Main implements AutoCloseable, Runnable {
             shader.setVec3("light.ambient", new Vector3f(ambientColor));
             shader.setVec3("light.diffuse", new Vector3f(diffuseColor));
             shader.setVec3("light.specular", new Vector3f(1.0f, 1.0f, 1.0f));
-            shader.setVec3("light.position", lightPos);
+
+            shader.setVec3("light.position", camera.getCameraPos());
+            shader.setVec3("light.direction", camera.getDirection());
+            shader.setFloat("light.cutOff", (float) Math.cos(Math.toRadians(12.5f)));
+            shader.setFloat("light.outerCutOff", (float) Math.cos(Math.toRadians(17.5f)));
 
             shader.setFloat("light.constant", 1.0f);
-            shader.setFloat("light.linear", 0.09f);
-            shader.setFloat("light.quadratic", 0.032f);
-
+            shader.setFloat("light.linear", 0.009f);
+            shader.setFloat("light.quadratic", 0.0032f);
 
             shader.setMat4("projection", projection);
             shader.setMat4("view", view);

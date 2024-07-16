@@ -150,4 +150,7 @@ public class Camera {
         return cameraPos;
     }
 
+    public Vector3f getDirection() {
+        return direction;
+    }
 }
