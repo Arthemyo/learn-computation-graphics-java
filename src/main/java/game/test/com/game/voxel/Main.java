@@ -78,13 +78,23 @@ public class Main implements AutoCloseable, Runnable {
             new Vector3f(2.0f, 5.0f, -15.0f),
             new Vector3f(-1.5f, -2.2f, -2.5f),
             new Vector3f(-3.8f, -2.0f, -12.3f),
-            new Vector3f(2.4f, -0.4f, -3.5f),
-            new Vector3f(-1.7f, 3.0f, -7.5f),
+            new Vector3f(2.4f, -0.4f, -6.5f),
+            new Vector3f(-1.7f, 5.0f, -7.5f),
             new Vector3f(1.3f, -2.0f, -2.5f),
-            new Vector3f(1.5f, 2.0f, -2.5f),
-            new Vector3f(1.5f, 0.2f, -1.5f),
-            new Vector3f(-1.3f, 1.0f, -1.5f)
+            new Vector3f(6.5f, 2.0f, -2.5f),
+            new Vector3f(6.5f, 0.2f, -8.5f),
+            new Vector3f(-1.3f, 1.0f, -7.5f)
     };
+
+    private Vector3f[] pointLightPositions = {
+            new Vector3f(0.7f, 0.2f, 2.0f),
+            new Vector3f(2.3f, -3.3f, -4.0f),
+            new Vector3f(-4.0f, 2.0f, -12.0f),
+            new Vector3f(0.0f, 0.0f, -3.0f),
+            new Vector3f(5.8f, 3.5f, -1.0f),
+            new Vector3f(2.0f, 5.0f, -17.0f)
+    };
+
 
     public static void main(String... args) {
         try (Main main = new Main()) {
@@ -207,14 +217,49 @@ public class Main implements AutoCloseable, Runnable {
             Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
 
             Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
-            Vector3f lightPos = new Vector3f(-0.2f, 1.0f, 2.0f);
-            Vector3f colorObject = new Vector3f(1.0f, 0.5f, 0.31f);
 
             Vector3f diffuseColor = new Vector3f(lightColor).mul(0.5f);
             Vector3f ambientColor = new Vector3f(diffuseColor).mul(0.2f);
 
             // Draw Cube Object
             shader.bind();
+            shader.setVec3("viewPos", camera.getCameraPos());
+            shader.setFloat("material.shininess", 32.0f);
+            for (int i = 0; i < pointLightPositions.length; i++) {
+                shader.setVec3("pointLights[" + i + "].position",
+                        new Vector3f(pointLightPositions[i]));
+                shader.setVec3("pointLights[" + i + "].ambient",
+                        new Vector3f(ambientColor));
+                shader.setVec3("pointLights[" + i + "].diffuse",
+                        new Vector3f(0.0f, 0.9f, 0.5f));
+                shader.setVec3("pointLights[" + i + "].specular",
+                        new Vector3f(0.0f, 0.9f, 0.5f));
+
+                shader.setFloat("pointLights[" + i + "].constant", 1.0f);
+                shader.setFloat("pointLights[" + i + "].linear", 0.06f);
+                shader.setFloat("pointLights[" + i + "].quadratic", 0.072f);
+            }
+
+            shader.setVec3("dirLight.direction", new Vector3f(0.0f, 1.0f, 0.0f));
+            shader.setVec3("dirLight.ambient", new Vector3f(ambientColor));
+            shader.setVec3("dirLight.diffuse", new Vector3f(diffuseColor));
+            shader.setVec3("dirLight.specular", new Vector3f(1.0f, 1.0f, 1.0f));
+
+            shader.setVec3("spotLight.ambient", new Vector3f(ambientColor));
+            shader.setVec3("spotLight.diffuse", new Vector3f(diffuseColor));
+            shader.setVec3("spotLight.specular", new Vector3f(1.0f, 1.0f, 1.0f));
+
+            shader.setVec3("spotLight.position", camera.getCameraPos());
+            shader.setVec3("spotLight.direction", camera.getDirection());
+            shader.setFloat("spotLight.cutOff", (float) Math.cos(Math.toRadians(12.5f)));
+            shader.setFloat("spotLight.outerCutOff", (float) Math.cos(Math.toRadians(17.5f)));
+
+            shader.setFloat("spotLight.constant", 1.0f);
+            shader.setFloat("spotLight.linear", 0.009f);
+            shader.setFloat("spotLight.quadratic", 0.0032f);
+
+            shader.setMat4("projection", projection);
+            shader.setMat4("view", view);
 
             for (int i = 0; i < 10; i++) {
 
@@ -227,43 +272,23 @@ public class Main implements AutoCloseable, Runnable {
                 cubo.drawCube();
 
             }
-
-            shader.setVec3("objectColor", colorObject);
-            shader.setVec3("lightColor", lightColor);
-            shader.setVec3("viewPos", camera.getCameraPos());
-
-            shader.setFloat("material.shininess", 64.0f);
-
-            shader.setVec3("light.ambient", new Vector3f(ambientColor));
-            shader.setVec3("light.diffuse", new Vector3f(diffuseColor));
-            shader.setVec3("light.specular", new Vector3f(1.0f, 1.0f, 1.0f));
-
-            shader.setVec3("light.position", camera.getCameraPos());
-            shader.setVec3("light.direction", camera.getDirection());
-            shader.setFloat("light.cutOff", (float) Math.cos(Math.toRadians(12.5f)));
-            shader.setFloat("light.outerCutOff", (float) Math.cos(Math.toRadians(17.5f)));
-
-            shader.setFloat("light.constant", 1.0f);
-            shader.setFloat("light.linear", 0.009f);
-            shader.setFloat("light.quadratic", 0.0032f);
-
-            shader.setMat4("projection", projection);
-            shader.setMat4("view", view);
             shader.unbind();
 
+
             lightShader.bind();
-            lightCube.drawCube();
-            Matrix4f modelLightCube = new Matrix4f().identity();
-            modelLightCube.translate(lightPos);
-            modelLightCube.scale(0.2f);
-            lightShader.setMat4("model", modelLightCube);
-            lightShader.setMat4("projection", projection);
-            lightShader.setMat4("view", view);
+            for (int i = 0; i < pointLightPositions.length; i++) {
+                lightCube.drawCube();
+                Matrix4f modelLightCube = new Matrix4f().identity();
+                modelLightCube.translate(pointLightPositions[i]);
+                modelLightCube.scale(0.2f);
+                lightShader.setMat4("model", modelLightCube);
+                lightShader.setMat4("projection", projection);
+                lightShader.setMat4("view", view);
+            }
             lightShader.unbind();
 
             camera.processInput(windowHandle);
 
         }
     }
-
 }

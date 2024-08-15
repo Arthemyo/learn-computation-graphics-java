@@ -16,20 +16,18 @@ import game.test.com.game.voxel.utils.Utils;
 public class Shader {
 
 	private int programId;
-	private int vertexShaderId;
-	private int fragmentShaderId;
-	private String vertexShaderSource;
-	private String fragmentShaderSource;
+	private final int vertexShaderId;
+	private final int fragmentShaderId;
 
-	public Shader(String vertexShaderSourcePath, String fragmentShaderSourcePath) throws IOException {
+    public Shader(String vertexShaderSourcePath, String fragmentShaderSourcePath) throws IOException {
 
 		this.programId = GL30.glCreateProgram();
 
 		InputStream inputStream = new FileInputStream(vertexShaderSourcePath);
-		this.vertexShaderSource = Utils.readFile(inputStream);
+        String vertexShaderSource = Utils.readFile(inputStream);
 
 		InputStream inputStream2 = new FileInputStream(fragmentShaderSourcePath);
-		this.fragmentShaderSource = Utils.readFile(inputStream2);
+        String fragmentShaderSource = Utils.readFile(inputStream2);
 
 		this.vertexShaderId = this.createShader(vertexShaderSource, GL30.GL_VERTEX_SHADER);
 		this.fragmentShaderId = this.createShader(fragmentShaderSource, GL30.GL_FRAGMENT_SHADER);

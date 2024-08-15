@@ -119,6 +119,7 @@ public class Cube {
         }
 
         glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
+
     }
 
     public void defineBuffers() {
@@ -206,11 +207,13 @@ public class Cube {
     }
 
     public void deleteBuffers() {
+
         glDeleteVertexArrays(idVAO);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
         glDeleteTextures(textureId);
+
     }
 
     public int getTextureId() {
