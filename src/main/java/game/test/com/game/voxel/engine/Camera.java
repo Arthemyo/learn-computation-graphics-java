@@ -1,4 +1,4 @@
-package game.test.com.game.voxel;
+package game.test.com.game.voxel.engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;

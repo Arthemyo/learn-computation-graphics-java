@@ -1,4 +1,4 @@
-package game.test.com.game.voxel;
+package game.test.com.game.voxel.engine;
 
 import java.io.FileInputStream;
 import java.io.IOException;

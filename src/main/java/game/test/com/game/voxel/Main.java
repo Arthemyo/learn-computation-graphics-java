@@ -1,44 +1,21 @@
 package game.test.com.game.voxel;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_U;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
-import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwGetKey;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWErrorCallback.createPrint;
 import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.Objects;
 
+import game.test.com.game.voxel.engine.Camera;
+import game.test.com.game.voxel.engine.Shader;
+import game.test.com.game.voxel.model.builders.ChunkMesh;
+import game.test.com.game.voxel.model.shapes.Chunk;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.Version;
@@ -46,8 +23,6 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
-
-import game.test.com.game.voxel.model.shapes.Cube;
 
 /**
  * @author Paul Nelson Baker
@@ -60,48 +35,20 @@ import game.test.com.game.voxel.model.shapes.Cube;
  */
 public class Main implements AutoCloseable, Runnable {
 
-    private static final String windowTitle = "Hello, World!";
-    private static final int windowWidth = 800;
-    private static final int windowHeight = 600;
+    private static final int windowWidth = 1800;
+    private static final int windowHeight = 820;
     private long windowHandle;
 
     private Shader shader;
-    private Shader lightShader;
-
     private Camera camera;
 
-    private Cube cubo;
-    private Cube lightCube;
-
-    private Vector3f[] cubePosition = {
-            new Vector3f(0.0f, 0.0f, 0.0f),
-            new Vector3f(2.0f, 5.0f, -15.0f),
-            new Vector3f(-1.5f, -2.2f, -2.5f),
-            new Vector3f(-3.8f, -2.0f, -12.3f),
-            new Vector3f(2.4f, -0.4f, -6.5f),
-            new Vector3f(-1.7f, 5.0f, -7.5f),
-            new Vector3f(1.3f, -2.0f, -2.5f),
-            new Vector3f(6.5f, 2.0f, -2.5f),
-            new Vector3f(6.5f, 0.2f, -8.5f),
-            new Vector3f(-1.3f, 1.0f, -7.5f)
-    };
-
-    private Vector3f[] pointLightPositions = {
-            new Vector3f(0.7f, 0.2f, 2.0f),
-            new Vector3f(2.3f, -3.3f, -4.0f),
-            new Vector3f(-4.0f, 2.0f, -12.0f),
-            new Vector3f(0.0f, 0.0f, -3.0f),
-            new Vector3f(5.8f, 3.5f, -1.0f),
-            new Vector3f(2.0f, 5.0f, -17.0f)
-    };
-
+    private ChunkMesh chunk;
 
     public static void main(String... args) {
         try (Main main = new Main()) {
             main.run();
         }
     }
-
     /**
      * Convienience method that also satisfies Runnable
      */
@@ -115,6 +62,7 @@ public class Main implements AutoCloseable, Runnable {
     }
 
     public void init() throws IOException {
+
         createPrint(System.err).set();
         System.out.println("Starting LWJGL " + Version.getVersion());
         if (!glfwInit()) {
@@ -123,6 +71,7 @@ public class Main implements AutoCloseable, Runnable {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        String windowTitle = "Hello, World!";
         windowHandle = glfwCreateWindow(windowWidth, windowHeight, windowTitle, NULL, NULL);
 
         if (windowHandle == NULL) {
@@ -134,11 +83,13 @@ public class Main implements AutoCloseable, Runnable {
             IntBuffer pHeight = stack.mallocInt(1);
             glfwGetWindowSize(windowHandle, pWidth, pHeight);
             GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+            assert vidMode != null;
             glfwSetWindowPos(windowHandle, (vidMode.width() - pWidth.get(0)) / 2,
                     (vidMode.height() - pHeight.get(0)) / 2);
         }
+
         glfwMakeContextCurrent(windowHandle);
-        glfwSwapInterval(1);
+        glfwSwapInterval(0);
         glfwShowWindow(windowHandle);
         createCapabilities();
         System.out.println("OpenGL: " + glGetString(GL_VERSION));
@@ -148,20 +99,19 @@ public class Main implements AutoCloseable, Runnable {
             glViewport(0, 0, width, height);
         });
 
-        camera = new Camera(new Vector3f(0.0f, 3.0f, 8.0f),
+        Chunk chunk1 = new Chunk(16, 32, 16);
+        chunk = new ChunkMesh(chunk1);
+        chunk.defineBlocks();
+        System.out.println(this.chunk.hasBlock(0, 23, 0));
+
+        camera = new Camera(new Vector3f(chunk1.getChunkWidth(), chunk1.getChunkHeight(), chunk1.getChunkDepth() + 6),
                 new Vector3f(0.0f, 1.0f, .0f),
                 -90.0f, -10.0f, 0.5f);
 
-        camera.setCameraSpeed(1.8f);
+        camera.setCameraSpeed(2.8f);
 
         shader = new Shader("src\\common\\shaders\\vertexShader.glsl",
                 "src\\common\\shaders\\fragmentShader.glsl");
-
-        lightShader = new Shader("src\\common\\shaders\\lightVertexShader.glsl",
-                "src\\common\\shaders\\lightFragmentShader.glsl");
-
-        cubo = new Cube(shader);
-        lightCube = new Cube(lightShader);
 
         glEnable(GL30.GL_DEPTH_TEST);
 
@@ -184,7 +134,16 @@ public class Main implements AutoCloseable, Runnable {
     }
 
     public void loop() {
+        double previousTime = glfwGetTime();
+        int frameCount = 0;
+
         while (!glfwWindowShouldClose(windowHandle)) {
+
+            // Measure speed
+            double currentTime = glfwGetTime();
+            frameCount++;
+
+            // If a second has passed.
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -192,6 +151,14 @@ public class Main implements AutoCloseable, Runnable {
 
             glfwSwapBuffers(windowHandle);
             glfwPollEvents();
+
+            if (currentTime - previousTime >= 1.0) {
+                // Display the frame count here any way you want.
+                glfwSetWindowTitle(windowHandle, String.valueOf(frameCount));
+
+                frameCount = 0;
+                previousTime = currentTime;
+            }
         }
     }
 
@@ -200,95 +167,38 @@ public class Main implements AutoCloseable, Runnable {
         glfwFreeCallbacks(windowHandle);
         glfwDestroyWindow(windowHandle);
         shader.deleteShader();
-        cubo.deleteBuffers();
-        lightCube.deleteBuffers();
-        lightShader.deleteShader();
+        this.chunk.clearUp();
         glfwTerminate();
-        glfwSetErrorCallback(null).free();
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
     }
 
     public void draw() {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
 
-            Matrix4f view = camera.getLookAt();
+        Matrix4f view = camera.getLookAt();
 
-            float FOV = camera.getZoom();
-            float AspectRatio = (float) windowWidth / windowHeight;
-            Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
+        float FOV = camera.getZoom();
+        float AspectRatio = (float) windowWidth / windowHeight;
+        Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
 
-            Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
+        Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
 
-            Vector3f diffuseColor = new Vector3f(lightColor).mul(0.5f);
-            Vector3f ambientColor = new Vector3f(diffuseColor).mul(0.2f);
+        Vector3f diffuseColor = new Vector3f(lightColor).mul(0.3f);
+        Vector3f ambientColor = new Vector3f(diffuseColor).mul(0.6f);
 
-            // Draw Cube Object
-            shader.bind();
-            shader.setVec3("viewPos", camera.getCameraPos());
-            shader.setFloat("material.shininess", 32.0f);
-            for (int i = 0; i < pointLightPositions.length; i++) {
-                shader.setVec3("pointLights[" + i + "].position",
-                        new Vector3f(pointLightPositions[i]));
-                shader.setVec3("pointLights[" + i + "].ambient",
-                        new Vector3f(ambientColor));
-                shader.setVec3("pointLights[" + i + "].diffuse",
-                        new Vector3f(0.0f, 0.9f, 0.5f));
-                shader.setVec3("pointLights[" + i + "].specular",
-                        new Vector3f(0.0f, 0.9f, 0.5f));
+        // Draw Cube Object
+        shader.bind();
 
-                shader.setFloat("pointLights[" + i + "].constant", 1.0f);
-                shader.setFloat("pointLights[" + i + "].linear", 0.06f);
-                shader.setFloat("pointLights[" + i + "].quadratic", 0.072f);
-            }
+        shader.setVec3("globalLight.direction", new Vector3f(5.0f, 16.0f, -6.0f));
+        shader.setVec3("globalLight.ambient", new Vector3f(ambientColor));
+        shader.setVec3("globalLight.diffuse", new Vector3f(diffuseColor));
 
-            shader.setVec3("dirLight.direction", new Vector3f(0.0f, 1.0f, 0.0f));
-            shader.setVec3("dirLight.ambient", new Vector3f(ambientColor));
-            shader.setVec3("dirLight.diffuse", new Vector3f(diffuseColor));
-            shader.setVec3("dirLight.specular", new Vector3f(1.0f, 1.0f, 1.0f));
+        this.chunk.draw(shader);
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
 
-            shader.setVec3("spotLight.ambient", new Vector3f(ambientColor));
-            shader.setVec3("spotLight.diffuse", new Vector3f(diffuseColor));
-            shader.setVec3("spotLight.specular", new Vector3f(1.0f, 1.0f, 1.0f));
+        shader.unbind();
 
-            shader.setVec3("spotLight.position", camera.getCameraPos());
-            shader.setVec3("spotLight.direction", camera.getDirection());
-            shader.setFloat("spotLight.cutOff", (float) Math.cos(Math.toRadians(12.5f)));
-            shader.setFloat("spotLight.outerCutOff", (float) Math.cos(Math.toRadians(17.5f)));
+        camera.processInput(windowHandle);
 
-            shader.setFloat("spotLight.constant", 1.0f);
-            shader.setFloat("spotLight.linear", 0.009f);
-            shader.setFloat("spotLight.quadratic", 0.0032f);
-
-            shader.setMat4("projection", projection);
-            shader.setMat4("view", view);
-
-            for (int i = 0; i < 10; i++) {
-
-                Matrix4f model = new Matrix4f().identity();
-                model.translate(cubePosition[i]);
-                float angle = 20.0f * i;
-                model.rotate((float) Math.toRadians(angle), new Vector3f(1.0f, 0.3f, 0.5f));
-
-                shader.setMat4("model", model);
-                cubo.drawCube();
-
-            }
-            shader.unbind();
-
-
-            lightShader.bind();
-            for (int i = 0; i < pointLightPositions.length; i++) {
-                lightCube.drawCube();
-                Matrix4f modelLightCube = new Matrix4f().identity();
-                modelLightCube.translate(pointLightPositions[i]);
-                modelLightCube.scale(0.2f);
-                lightShader.setMat4("model", modelLightCube);
-                lightShader.setMat4("projection", projection);
-                lightShader.setMat4("view", view);
-            }
-            lightShader.unbind();
-
-            camera.processInput(windowHandle);
-
-        }
     }
 }
