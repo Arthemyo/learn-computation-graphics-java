@@ -12,6 +12,8 @@ public class MainTest {
     public void mainContextLoadsAndUnloads() throws IOException {
         try (Main main = new Main()) {
             main.init();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

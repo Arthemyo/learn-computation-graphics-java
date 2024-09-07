@@ -16,7 +16,6 @@ uniform Material material;
 
 struct Light {
     vec3 direction;
-
     vec3 ambient;
     vec3 diffuse;
 };
@@ -30,8 +29,7 @@ void main() {
     float diff = max(dot(norm, lightDir), 0.0);
 
     vec3 ambient = globalLight.ambient * vec3(texture(material.texture_diffuse1, TexCoords));
-    vec3 diffuse = globalLight.diffuse * diff * vec3(texture(material.texture_diffuse1,
-                                                       TexCoords));
+    vec3 diffuse = globalLight.diffuse * diff * vec3(texture(material.texture_diffuse1, TexCoords));
 
     vec3 result = ambient + diffuse;
 

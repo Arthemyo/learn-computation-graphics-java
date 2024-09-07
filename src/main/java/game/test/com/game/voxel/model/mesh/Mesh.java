@@ -5,6 +5,7 @@ import game.test.com.game.voxel.model.intefaces.Model;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Objects;
@@ -16,6 +17,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Mesh implements Model {
+
     private final List<Vertex> vertices;
     private final int[] indices;
     private final List<Texture> textures;
@@ -36,8 +38,8 @@ public class Mesh implements Model {
 
     public void setupMesh() {
         try {
-            FloatBuffer vec3BufferVertice = MemoryUtil.memAllocFloat(this.vertices.size() * 8);
             //Generate a buffer to save the vertex object
+            FloatBuffer vec3BufferVertice = MemoryUtil.memAllocFloat(this.vertices.size() * 8);
 
             for (Vertex  vertex : vertices) {
                 //Get a float array of a Vector3f(Vector of three values type float);
@@ -136,5 +138,4 @@ public class Mesh implements Model {
         glDeleteBuffers(this.EBO);
         GL30.glBindVertexArray(0);
     }
-
 }

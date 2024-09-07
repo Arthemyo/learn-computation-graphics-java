@@ -3,6 +3,7 @@ package game.test.com.game.voxel.model.shapes;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Chunk {
@@ -11,7 +12,7 @@ public class Chunk {
     private int chunkWidth = 1;
     private int chunkDepth = 1;
 
-    private final List<Block> blocks;
+    private List<Block> blocks;
     private Vector3f origin;
 
     public Chunk() {
@@ -39,5 +40,9 @@ public class Chunk {
 
     public int getChunkDepth() {
         return chunkDepth;
+    }
+
+    public void setBlocks(List<Block> blocks) {
+        this.blocks = blocks;
     }
 }

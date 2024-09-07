@@ -25,6 +25,7 @@ public class Block implements Model {
     private final BlockType blockType;
     private final Vector3f position;
     private final List<Vertex> vertices;
+    private final List<Face> faces;
     private Mesh mesh;
 
     private final int[] indices = {
@@ -38,6 +39,7 @@ public class Block implements Model {
 
     public Block(BlockType blockType) {
         this.blockType = blockType;
+        this.faces = new ArrayList<>();
         this.position = new Vector3f();
         this.textures = new ArrayList<>();
         this.vertices = new ArrayList<>();
@@ -80,15 +82,13 @@ public class Block implements Model {
             IntBuffer height = stack.mallocInt(1);
             IntBuffer nrChannels = stack.mallocInt(1);
 
-            ByteBuffer buf = stbi_load(path, width, height, nrChannels,
-                    4);
+            ByteBuffer buf = stbi_load(path, width, height, nrChannels, 4);
 
             int w = width.get();
             int h = height.get();
 
             if (buf == null) {
-                throw new RuntimeException("Image file not loaded: "
-                        + stbi_failure_reason());
+                throw new RuntimeException("Image file not loaded: " + stbi_failure_reason());
             }
 
             Texture texture = new Texture(glGenTextures(), typeTexture);
@@ -125,5 +125,17 @@ public class Block implements Model {
 
     public void clear() {
         this.mesh.clear();
+    }
+
+    public List<Texture> getTextures() {
+        return textures;
+    }
+
+    public List<Vertex> getVertices() {
+        return vertices;
+    }
+
+    public List<Face> getFaces() {
+        return faces;
     }
 }

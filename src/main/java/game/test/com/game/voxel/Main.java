@@ -1,7 +1,9 @@
 package game.test.com.game.voxel;
 
+import static java.lang.Math.max;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFWErrorCallback.createPrint;
 import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.*;
@@ -11,6 +13,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import game.test.com.game.voxel.engine.Camera;
 import game.test.com.game.voxel.engine.Shader;
@@ -35,6 +39,9 @@ import org.lwjgl.system.MemoryStack;
  */
 public class Main implements AutoCloseable, Runnable {
 
+    public final ExecutorService executorService = Executors.newFixedThreadPool(max(1,
+            Runtime.getRuntime().availableProcessors() / 2));
+
     private static final int windowWidth = 1800;
     private static final int windowHeight = 820;
     private long windowHandle;
@@ -49,6 +56,7 @@ public class Main implements AutoCloseable, Runnable {
             main.run();
         }
     }
+
     /**
      * Convienience method that also satisfies Runnable
      */
@@ -57,12 +65,99 @@ public class Main implements AutoCloseable, Runnable {
             init();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         loop();
     }
 
-    public void init() throws IOException {
+    public void init() throws IOException, InterruptedException {
 
+        setupInit();
+
+        chunk = new ChunkMesh(new Chunk(16, 32, 16));
+        chunk.defineBlocks();
+
+        camera = new Camera(new Vector3f(0, 0, 5),
+                new Vector3f(0.0f, 1.0f, .0f),
+                -90.0f, -10.0f, 0.5f);
+        camera.setCameraSpeed(2.8f);
+
+        System.out.println("ACTUAL CONTEXT MAIN: " + glfwGetCurrentContext());
+
+        shader = new Shader("src\\common\\shaders\\vertexShader.glsl",
+                "src\\common\\shaders\\fragmentShader.glsl");
+
+
+    }
+
+    public void loop() {
+        double previousTime = glfwGetTime();
+        int frameCount = 0;
+
+        while (!glfwWindowShouldClose(windowHandle)) {
+            // Measure speed
+            double currentTime = glfwGetTime();
+            frameCount++;
+
+            if (currentTime - previousTime >= 1.0) {
+                // Display the frame count here any way you want.
+                glfwSetWindowTitle(windowHandle, String.valueOf(frameCount));
+
+                frameCount = 0;
+                previousTime = currentTime;
+            }
+
+            // If a second has passed.
+            glClearColor(0.2f, 0.6f, 0.8f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            draw();
+
+            glfwSwapBuffers(windowHandle);
+            glfwPollEvents();
+        }
+    }
+
+    @Override
+    public void close() {
+        glfwFreeCallbacks(windowHandle);
+        glfwDestroyWindow(windowHandle);
+        shader.deleteShader();
+        this.chunk.clearUp();
+        glfwTerminate();
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+    }
+
+    public void draw() {
+
+        Matrix4f view = camera.getLookAt();
+
+        float FOV = camera.getZoom();
+        float AspectRatio = (float) windowWidth / windowHeight;
+        Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
+
+        Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
+
+        Vector3f diffuseColor = new Vector3f(lightColor).mul(0.3f);
+        Vector3f ambientColor = new Vector3f(diffuseColor).mul(0.6f);
+
+        // Draw Cube Object
+        shader.bind();
+        shader.setVec3("globalLight.direction", new Vector3f(5.0f, 16.0f, -6.0f));
+        shader.setVec3("globalLight.ambient", new Vector3f(ambientColor));
+        shader.setVec3("globalLight.diffuse", new Vector3f(diffuseColor));
+
+        chunk.draw(shader);
+
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+        shader.unbind();
+
+        camera.processInput(windowHandle);
+    }
+
+    public void setupInit() {
         createPrint(System.err).set();
         System.out.println("Starting LWJGL " + Version.getVersion());
         if (!glfwInit()) {
@@ -94,24 +189,11 @@ public class Main implements AutoCloseable, Runnable {
         createCapabilities();
         System.out.println("OpenGL: " + glGetString(GL_VERSION));
         glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
+        System.out.println("Thread Main Context" + " : " + glfwGetCurrentContext());
 
         GLFW.glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {
             glViewport(0, 0, width, height);
         });
-
-        Chunk chunk1 = new Chunk(16, 32, 16);
-        chunk = new ChunkMesh(chunk1);
-        chunk.defineBlocks();
-        System.out.println(this.chunk.hasBlock(0, 23, 0));
-
-        camera = new Camera(new Vector3f(chunk1.getChunkWidth(), chunk1.getChunkHeight(), chunk1.getChunkDepth() + 6),
-                new Vector3f(0.0f, 1.0f, .0f),
-                -90.0f, -10.0f, 0.5f);
-
-        camera.setCameraSpeed(2.8f);
-
-        shader = new Shader("src\\common\\shaders\\vertexShader.glsl",
-                "src\\common\\shaders\\fragmentShader.glsl");
 
         glEnable(GL30.GL_DEPTH_TEST);
 
@@ -130,75 +212,5 @@ public class Main implements AutoCloseable, Runnable {
             }
 
         });
-
-    }
-
-    public void loop() {
-        double previousTime = glfwGetTime();
-        int frameCount = 0;
-
-        while (!glfwWindowShouldClose(windowHandle)) {
-
-            // Measure speed
-            double currentTime = glfwGetTime();
-            frameCount++;
-
-            // If a second has passed.
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            draw();
-
-            glfwSwapBuffers(windowHandle);
-            glfwPollEvents();
-
-            if (currentTime - previousTime >= 1.0) {
-                // Display the frame count here any way you want.
-                glfwSetWindowTitle(windowHandle, String.valueOf(frameCount));
-
-                frameCount = 0;
-                previousTime = currentTime;
-            }
-        }
-    }
-
-    @Override
-    public void close() {
-        glfwFreeCallbacks(windowHandle);
-        glfwDestroyWindow(windowHandle);
-        shader.deleteShader();
-        this.chunk.clearUp();
-        glfwTerminate();
-        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
-    }
-
-    public void draw() {
-
-        Matrix4f view = camera.getLookAt();
-
-        float FOV = camera.getZoom();
-        float AspectRatio = (float) windowWidth / windowHeight;
-        Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
-
-        Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
-
-        Vector3f diffuseColor = new Vector3f(lightColor).mul(0.3f);
-        Vector3f ambientColor = new Vector3f(diffuseColor).mul(0.6f);
-
-        // Draw Cube Object
-        shader.bind();
-
-        shader.setVec3("globalLight.direction", new Vector3f(5.0f, 16.0f, -6.0f));
-        shader.setVec3("globalLight.ambient", new Vector3f(ambientColor));
-        shader.setVec3("globalLight.diffuse", new Vector3f(diffuseColor));
-
-        this.chunk.draw(shader);
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", view);
-
-        shader.unbind();
-
-        camera.processInput(windowHandle);
-
     }
 }

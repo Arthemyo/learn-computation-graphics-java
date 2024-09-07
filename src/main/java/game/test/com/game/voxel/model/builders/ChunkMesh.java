@@ -4,22 +4,33 @@ import game.test.com.game.voxel.engine.Shader;
 import game.test.com.game.voxel.model.enums.BlockType;
 import game.test.com.game.voxel.model.enums.FaceType;
 import game.test.com.game.voxel.model.intefaces.Model;
+import game.test.com.game.voxel.model.mesh.Mesh;
+import game.test.com.game.voxel.model.mesh.Texture;
+import game.test.com.game.voxel.model.mesh.Vertex;
 import game.test.com.game.voxel.model.shapes.Block;
 import game.test.com.game.voxel.model.shapes.Chunk;
 import org.joml.Matrix4f;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static java.lang.Math.max;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ChunkMesh implements Model {
 
     private final Chunk chunk;
     private final BlockType[][][] blockTypes;
+    private final List<Vertex> vertices;
+    private final List<Texture> textures;
+    private Mesh mesh;
+
+    public final int[] indicesFace = {
+            0, 1, 3, 3, 1, 2
+    };
 
     public ChunkMesh(Chunk chunk) {
         this.chunk = chunk;
+        vertices = new ArrayList<>();
+        textures = new ArrayList<>();
         this.blockTypes = new BlockType[this.chunk.getChunkWidth()][this.chunk.getChunkHeight()][this.chunk.getChunkDepth()];
     }
 
@@ -27,29 +38,40 @@ public class ChunkMesh implements Model {
         for (int x = 0; x < chunk.getChunkWidth(); x++) {
             for (int y = 0; y < chunk.getChunkHeight(); y++) {
                 for (int z = 0; z < chunk.getChunkDepth(); z++) {
-                    this.blockTypes[x][y][z] = getBlock(x, y, z);
                     if (getBlock(x, y, z) != BlockType.AIR) {
+                        blockTypes[x][y][z] = getBlock(x, y, z);
                         Block block = new Block(getBlock(x, y, z));
                         block.setPosition(x, y, z);
-                        this.chunk.getBlocks().add(block);
+                        chunk.getBlocks().add(block);
                     }
                 }
             }
         }
 
-       ExecutorService executorService = Executors.newFixedThreadPool(max(1, Runtime.getRuntime().availableProcessors() / 2), r -> {
-            Thread t = new Thread(r);
-            t.setPriority(Thread.MIN_PRIORITY);
-            t.setName("Chunk builder");
-            t.setDaemon(true);
-            return t;
+        chunk.getBlocks().forEach(block -> {
+            defineFaceMesh(block);
+            block.defineMesh();
+            vertices.addAll(block.getVertices());
+            textures.addAll(block.getTextures());
         });
 
-        for (Block block : this.chunk.getBlocks()) {
-            this.defineFaceMesh(block);
+        List<Integer> indicesVertices = new ArrayList<>();
+        int maxValueIni = 3;
+
+        for (int k : indicesFace) {
+            indicesVertices.add(k);
         }
 
-        this.chunk.getBlocks().forEach(Block::defineMesh);
+        for(int j = 0; j < (vertices.size() / 4 - 1); j++){
+            for(int i = 0; i < indicesFace.length; i++){
+                indicesVertices.add(indicesFace[i] + maxValueIni + 1);
+                indicesFace[i] = indicesFace[i] + maxValueIni + 1;
+            }
+        }
+
+        int[] indices = indicesVertices.stream().mapToInt(Integer::intValue).toArray();
+
+        mesh = new Mesh(vertices, textures, indices);
     }
 
     public BlockType getBlock(int x, int y, int z) {
@@ -64,19 +86,12 @@ public class ChunkMesh implements Model {
         return (y > surfaceY) ? BlockType.AIR : BlockType.STONE;
     }
 
-    public boolean hasBlock(int x, int y, int z) {
+    private boolean hasBlock(int x, int y, int z) {
         try {
-            for (Block block : this.chunk.getBlocks()) {
-                if ((x == block.getPosition().x) &&
-                        (y == block.getPosition().y) &&
-                        (z == block.getPosition().z)) {
-                    return true;
-                }
-            }
+            return this.blockTypes[x][y][z] != null;
         } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public void defineFaceMesh(Block block) {
@@ -102,11 +117,9 @@ public class ChunkMesh implements Model {
 
     @Override
     public void draw(Shader shader) {
-        this.chunk.getBlocks().forEach(block -> {
-            Matrix4f model = new Matrix4f().identity();
-            shader.setMat4("model", model);
-            block.draw(shader);
-        });
+        Matrix4f model = new Matrix4f().identity();
+        shader.setMat4("model", model);
+        mesh.draw(shader);
     }
 
     public void clearUp() {
