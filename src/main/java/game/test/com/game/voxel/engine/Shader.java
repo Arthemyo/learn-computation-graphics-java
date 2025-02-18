@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.FloatBuffer;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
@@ -128,4 +129,12 @@ public class Shader {
 		GL30.glDeleteShader(fragmentShaderId);
 	}
 
+	public void setVec2(String name, Vector2f vec2) {
+		int vec2Loc = GL20.glGetUniformLocation(programId, name);
+		FloatBuffer vec2Buffer = BufferUtils.createFloatBuffer(2);
+
+		vec2.get(vec2Buffer);
+
+		GL20.glUniform2fv(vec2Loc, vec2Buffer);
+	}
 }

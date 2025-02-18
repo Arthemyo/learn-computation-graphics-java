@@ -32,25 +32,28 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.glfw.GLFWErrorCallback.createPrint;
 import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
+import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import game.test.com.game.voxel.engine.Camera;
 import game.test.com.game.voxel.engine.Shader;
-import game.test.com.game.voxel.model.Model;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.joml.Vector2f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
-
-import game.test.com.game.voxel.model.shapes.Cube;
 
 /**
  * @author Paul Nelson Baker
@@ -64,19 +67,27 @@ import game.test.com.game.voxel.model.shapes.Cube;
 public class Main implements AutoCloseable, Runnable {
 
     private static final String windowTitle = "Hello, World!";
-    private static final int windowWidth = 1900;
-    private static final int windowHeight = 1080;
+    private static final int windowWidth = 820;
+    private static final int windowHeight = 680;
     private long windowHandle;
 
     private Shader shader;
-    private Shader lightShader;
 
-    private Camera camera;
+    private final float[] quadVertices = {
+             // positions     // colors
+            -0.05f,  0.05f,   1.0f, 0.0f, 0.0f,
+             0.05f, -0.05f,   0.0f, 1.0f, 0.0f,
+            -0.05f, -0.05f,   0.0f, 0.0f, 1.0f,
+            -0.05f,  0.05f,   1.0f, 0.0f, 0.0f,
+             0.05f, -0.05f,   0.0f, 1.0f, 0.0f,
+             0.05f,  0.05f,   0.0f, 1.0f, 1.0f
+    };
 
-    private Cube cubo;
-    private Cube lightCube;
+    private int idVAO;
+    private int idVBO;
 
-    private Model modelo;
+    private final Vector2f[] translations = new Vector2f[100];
+
 
     public static void main(String... args) {
         try (Main main = new Main()) {
@@ -130,21 +141,57 @@ public class Main implements AutoCloseable, Runnable {
             glViewport(0, 0, width, height);
         });
 
-        camera = new Camera(new Vector3f(0.0f, 3.0f, 8.0f),
-                new Vector3f(0.0f, 1.0f, .0f),
-                -90.0f, -10.0f, 0.5f);
-
-        camera.setCameraSpeed(2.8f);
+        int index = 0;
+        float offset = 0.1f;
+        for(int x = -10; x < 10; x += 2){
+            for(int y = -10; y < 10; y += 2){
+                Vector2f translation = new Vector2f();
+                translation.x = (float) x / 10 + offset;
+                translation.y = (float) y / 10 + offset;
+                translations[index] = translation;
+                index++;
+            }
+        }
 
         shader = new Shader("src\\common\\shaders\\vertexShader.glsl",
                 "src\\common\\shaders\\fragmentShader.glsl");
 
-        lightShader = new Shader("src\\common\\shaders\\lightVertexShader.glsl",
-                "src\\common\\shaders\\lightFragmentShader.glsl");
+        idVAO = glGenVertexArrays();
+        idVBO = glGenBuffers();
+        int instanceVBO = glGenBuffers();
 
-        modelo = new Model("src\\common\\obj3d\\backpack\\backpack.obj");
-        cubo = new Cube(shader);
-        lightCube = new Cube(lightShader);
+        glBindVertexArray(idVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, idVBO);
+
+        glBufferData(GL_ARRAY_BUFFER, quadVertices, GL_STATIC_DRAW);
+
+        // We now tell to opengl how to interpret the verticeTriangle;
+        // Position of vertex
+        glVertexAttribPointer(0, 2, GL_FLOAT, false, 5 * Float.BYTES, 0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 5 * Float.BYTES, 2 * Float.BYTES);
+        glEnableVertexAttribArray(1);
+
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(100 * 2);
+
+        // Supondo que `translations` seja um List<Vector2f>
+        for (Vector2f translation : translations) {
+            buffer.put(translation.x).put(translation.y);
+        }
+
+        buffer.flip(); // Prepara o buffer para leitura
+
+        // Envia os dados para a GPU
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, 2 * Float.BYTES, 0 * Float.BYTES);
+        glEnableVertexAttribArray(2);
+        glVertexAttribDivisor(2, 1);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glEnable(GL30.GL_DEPTH_TEST);
 
@@ -168,7 +215,7 @@ public class Main implements AutoCloseable, Runnable {
 
     public void loop() {
         while (!glfwWindowShouldClose(windowHandle)) {
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             draw();
@@ -183,40 +230,16 @@ public class Main implements AutoCloseable, Runnable {
         glfwFreeCallbacks(windowHandle);
         glfwDestroyWindow(windowHandle);
         shader.deleteShader();
-        cubo.deleteBuffers();
-        lightCube.deleteBuffers();
-        lightShader.deleteShader();
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
 
     public void draw() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-
-            Matrix4f view = camera.getLookAt();
-
-            float FOV = camera.getZoom();
-            float AspectRatio = (float) windowWidth / windowHeight;
-            Matrix4f projection = new Matrix4f().perspective(FOV, AspectRatio, 1.0f, 100.0f);
-
-            Vector3f lightColor = new Vector3f(1.0f, 1.0f, 1.0f);
-
-            Vector3f diffuseColor = new Vector3f(lightColor).mul(0.5f);
-            Vector3f ambientColor = new Vector3f(diffuseColor).mul(0.2f);
-
             // Draw Cube Object
             shader.bind();
-            shader.setVec3("viewPos", camera.getCameraPos());
-            shader.setMat4("projection", projection);
-            shader.setMat4("view", view);
-
-            Matrix4f model = new Matrix4f().identity();
-            shader.setMat4("model", model);
-            modelo.draw(shader);
-
+            glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
             shader.unbind();
-
-            camera.processInput(windowHandle);
 
         }
     }
