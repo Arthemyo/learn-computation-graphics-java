@@ -1,4 +1,4 @@
-package game.test.com.game.voxel.model;
+package game.test.com.game.voxel.engine;
 
 import game.test.com.game.voxel.engine.Shader;
 import game.test.com.game.voxel.model.mesh.Mesh;
@@ -12,7 +12,6 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -21,11 +20,10 @@ import java.util.Objects;
 
 import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
-import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
 
 public class Model {
 
-    private List<Mesh> meshes = new ArrayList<>();
+    private final List<Mesh> meshes = new ArrayList<>();
     private String directory;
 
     public Model(String path){
@@ -220,5 +218,9 @@ public class Model {
         for (Mesh mesh : meshes) {
             mesh.draw(shader);
         }
+    }
+
+    public List<Mesh> getMeshes() {
+        return meshes;
     }
 }

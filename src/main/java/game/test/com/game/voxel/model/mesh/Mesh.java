@@ -20,22 +20,22 @@ public class Mesh {
     private final int[] indices;
     private final List<Texture> textures;
 
-    private final int VBO, VAO, EBO;
+    private int VBO, VAO, EBO;
 
     public Mesh(List<Vertex> vertices, List<Texture> textures, int[] indices) {
         this.vertices = vertices;
         this.indices = indices;
         this.textures = textures;
 
-        this.VAO = glGenVertexArrays();
-        this.VBO = glGenBuffers();
-        this.EBO = glGenBuffers();
-
         this.setupMesh();
     }
 
     public void setupMesh() {
         try {
+            this.VAO = glGenVertexArrays();
+            this.VBO = glGenBuffers();
+            this.EBO = glGenBuffers();
+
             //Generate a buffer to save the vertex object
             FloatBuffer vec3BufferVertice = MemoryUtil.memAllocFloat(this.vertices.size() * 8);
 
@@ -72,6 +72,7 @@ public class Mesh {
 
             //Binding array buffer(VBO) with our array data of vertex
             glBufferData(GL_ARRAY_BUFFER, vec3BufferVertice, GL_STATIC_DRAW);
+            vec3BufferVertice.clear();
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
@@ -89,8 +90,6 @@ public class Mesh {
             glEnableVertexAttribArray(2);
 
             glBindVertexArray(0);
-            vec3BufferVertice.clear();
-
         } catch (Exception e) {
             throw new RuntimeException("Draw Cube Failure: " + e.getMessage());
         }
@@ -128,12 +127,9 @@ public class Mesh {
     }
 
     public void clear() {
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glDeleteBuffers(this.VAO);
         glDeleteBuffers(this.VBO);
         glDeleteBuffers(this.EBO);
-        GL30.glBindVertexArray(0);
     }
 
     public List<Vertex> getVertices() {
@@ -146,5 +142,13 @@ public class Mesh {
 
     public List<Texture> getTextures() {
         return textures;
+    }
+
+    public int getVAO() {
+        return VAO;
+    }
+
+    public int getVBO() {
+        return VBO;
     }
 }

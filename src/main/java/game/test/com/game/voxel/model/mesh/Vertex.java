@@ -4,7 +4,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Vertex {
-    private Vector3f position;
+    private final Vector3f position;
     private final Vector3f normal;
     private final Vector2f textureCoords;
 

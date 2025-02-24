@@ -15,7 +15,7 @@ import game.test.com.game.voxel.utils.Utils;
 
 public class Shader {
 
-	private int programId;
+	private final int programId;
 	private final int vertexShaderId;
 	private final int fragmentShaderId;
 
@@ -117,10 +117,6 @@ public class Shader {
 
 	public int getFragmentShaderId() {
 		return fragmentShaderId;
-	}
-
-	public void setProgramId(int programId) {
-		this.programId = programId;
 	}
 
 	public void deleteShader() {
