@@ -1,11 +1,10 @@
 package game.test.com.game.voxel.model.mesh;
 
 import game.test.com.game.voxel.engine.Shader;
-import game.test.com.game.voxel.model.intefaces.Model;
+import game.test.com.game.voxel.model.intefaces.Entity;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Objects;
@@ -15,8 +14,9 @@ import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
-public class Mesh implements Model {
+public class Mesh implements Entity {
 
     private final List<Vertex> vertices;
     private final int[] indices;
@@ -99,6 +99,11 @@ public class Mesh implements Model {
     }
 
     @Override
+    public void update() {
+
+    }
+
+    @Override
     public void draw(Shader shader) {
 
         int diffuseNr = 1;
@@ -136,6 +141,12 @@ public class Mesh implements Model {
         glDeleteBuffers(this.VAO);
         glDeleteBuffers(this.VBO);
         glDeleteBuffers(this.EBO);
-        GL30.glBindVertexArray(0);
+        this.textures.clear();
+        this.vertices.clear();
+        glBindVertexArray(0);
+    }
+
+    public int getVAO() {
+        return VAO;
     }
 }
