@@ -1,11 +1,9 @@
 package game.test.com.game.voxel.model.shapes;
 
+import game.test.com.game.voxel.model.builders.ChunkBuilder;
 import game.test.com.game.voxel.model.mesh.Vertex;
-import game.test.com.game.voxel.model.enums.FaceType;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import java.util.BitSet;
 
 public class Face {
     private final int facesBits;
@@ -21,7 +19,7 @@ public class Face {
     }
 
     public void defineFace() {
-        if ((this.facesBits & Chunk.CHUNK_POS_Z) == 1) {
+        if ((this.facesBits & ChunkBuilder.CHUNK_POS_Z) == 1) {
             vertice0 = new Vertex(new Vector3f(0.0f, 0.0f, 0.0f),
                     new Vector3f(0.0f, 0.0f, 1.0f),
                     new Vector2f(0.0f, 0.0f));
@@ -39,7 +37,7 @@ public class Face {
                     new Vector2f(1.0f, 0.0f));
         }
 
-        if ((this.facesBits & Chunk.CHUNK_NEG_Z) == 2) {
+        if ((this.facesBits & ChunkBuilder.CHUNK_NEG_Z) == 2) {
             vertice0 = new Vertex(new Vector3f(1.0f, 0.0f, -1.0f),
                     new Vector3f(0.0f, 0.0f, -1.0f),
                     new Vector2f(0.0f, 0.0f));
@@ -57,7 +55,7 @@ public class Face {
                     new Vector2f(1.0f, 0.0f));
         }
 
-        if ((this.facesBits & Chunk.CHUNK_POS_X) == 4) {
+        if ((this.facesBits & ChunkBuilder.CHUNK_POS_X) == 4) {
             vertice0 = new Vertex(new Vector3f(1.0f, 0.0f, 0.0f),
                     new Vector3f(1.0f, 0.0f, 0.0f),
                     new Vector2f(0.0f, 0.0f));
@@ -75,7 +73,7 @@ public class Face {
                     new Vector2f(1.0f, 0.0f));
         }
 
-        if ((this.facesBits & Chunk.CHUNK_NEG_X) == 8) {
+        if ((this.facesBits & ChunkBuilder.CHUNK_NEG_X) == 8) {
             vertice0 = new Vertex(new Vector3f(0.0f, 0.0f, -1.0f),
                     new Vector3f(-1.0f, 0.0f, 0.0f),
                     new Vector2f(0.0f, 0.0f));
@@ -93,7 +91,7 @@ public class Face {
                     new Vector2f(1.0f, 0.0f));
         }
 
-        if ((this.facesBits & Chunk.CHUNK_POS_Y) == 16) {
+        if ((this.facesBits & ChunkBuilder.CHUNK_POS_Y) == 16) {
             vertice0 = new Vertex(new Vector3f(0.0f, 1.0f, 0.0f),
                     new Vector3f(0.0f, 1.0f, 0.0f),
                     new Vector2f(0.0f, 0.0f));
@@ -111,7 +109,7 @@ public class Face {
                     new Vector2f(1.0f, 0.0f));
         }
 
-        if ((this.facesBits & Chunk.CHUNK_NEG_Y) == 32) {
+        if ((this.facesBits & ChunkBuilder.CHUNK_NEG_Y) == 32) {
             vertice0 = new Vertex(new Vector3f(0.0f, 0.0f, -1.0f),
                     new Vector3f(0.0f, -1.0f, 0.0f),
                     new Vector2f(0.0f, 0.0f));

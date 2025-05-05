@@ -17,21 +17,21 @@ import org.lwjgl.glfw.GLFWScrollCallback;
 
 public class Camera {
 
-    Vector3f cameraPos;
-    Vector3f up;
-    Vector3f cameraRight;
-    Vector3f direction = new Vector3f();
-    float yaw;
-    float pitch;
+    private final Vector3f cameraPos;
+    private final Vector3f up;
+    private Vector3f cameraRight;
+    private final Vector3f direction = new Vector3f();
+    private float yaw;
+    private float pitch;
 
-    float cameraSpeed = 0.0f;
+    private float cameraSpeed;
     float deltaTime = 0.0f; // Time between current frame and last frame
-    float lastFrame = 0.0f;
+    private float lastFrame = 0.0f;
 
-    float lastX = 400, lastY = 300;
-    boolean firstMouse = true;
+    private float lastX = 400, lastY = 300;
+    private boolean firstMouse = true;
     float sensitivity = 0.1f;
-    float Zoom = 45.0f;
+    private float Zoom = 45.0f;
 
     public Camera(Vector3f cameraPos, Vector3f up, float yaw, float pitch, float sensitivity) {
         this.cameraPos = cameraPos;

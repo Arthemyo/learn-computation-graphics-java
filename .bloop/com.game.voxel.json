@@ -1,0 +1,553 @@
+{
+    "version": "1.4.0",
+    "project": {
+        "name": "com.game.voxel",
+        "directory": "C:\\Users\\arthe\\Documents\\Estudos\\com.game.voxel",
+        "workspaceDir": "C:\\Users\\arthe\\Documents\\Estudos\\com.game.voxel",
+        "sources": [
+            "C:\\Users\\arthe\\Documents\\Estudos\\com.game.voxel\\src\\main\\java"
+        ],
+        "dependencies": [
+            
+        ],
+        "classpath": [
+            "C:\\Users\\arthe\\Documents\\Estudos\\com.game.voxel\\target\\classes",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl\\3.3.3\\lwjgl-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-assimp\\3.3.3\\lwjgl-assimp-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-bgfx\\3.3.3\\lwjgl-bgfx-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-glfw\\3.3.3\\lwjgl-glfw-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nanovg\\3.3.3\\lwjgl-nanovg-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nuklear\\3.3.3\\lwjgl-nuklear-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-openal\\3.3.3\\lwjgl-openal-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-opengl\\3.3.3\\lwjgl-opengl-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-par\\3.3.3\\lwjgl-par-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-stb\\3.3.3\\lwjgl-stb-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-vulkan\\3.3.3\\lwjgl-vulkan-3.3.3.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl\\3.3.3\\lwjgl-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-assimp\\3.3.3\\lwjgl-assimp-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-bgfx\\3.3.3\\lwjgl-bgfx-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-glfw\\3.3.3\\lwjgl-glfw-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nanovg\\3.3.3\\lwjgl-nanovg-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nuklear\\3.3.3\\lwjgl-nuklear-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-openal\\3.3.3\\lwjgl-openal-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-opengl\\3.3.3\\lwjgl-opengl-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-par\\3.3.3\\lwjgl-par-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-stb\\3.3.3\\lwjgl-stb-3.3.3-natives-windows.jar",
+            "C:\\Users\\arthe\\.m2\\repository\\org\\joml\\joml\\1.10.5\\joml-1.10.5.jar"
+        ],
+        "out": "C:\\Users\\arthe\\Documents\\Estudos\\com.game.voxel\\target",
+        "classesDir": "C:\\Users\\arthe\\Documents\\Estudos\\com.game.voxel\\target\\classes",
+        "resources": [
+            "C:\\Users\\arthe\\Documents\\Estudos\\com.game.voxel\\src\\main\\resources"
+        ],
+        "java": {
+            "options": [
+                "-g",
+                "-target",
+                "12",
+                "-source",
+                "12",
+                "-encoding",
+                "UTF-8"
+            ]
+        },
+        "test": {
+            "frameworks": [
+                {
+                    "names": [
+                        "com.novocode.junit.JUnitFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.scalatest.tools.Framework",
+                        "org.scalatest.tools.ScalaTestFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.scalacheck.ScalaCheckFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.specs.runner.SpecsFramework",
+                        "org.specs2.runner.Specs2Framework",
+                        "org.specs2.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "utest.runner.Framework"
+                    ]
+                },
+                {
+                    "names": [
+                        "munit.Framework"
+                    ]
+                }
+            ],
+            "options": {
+                "excludes": [
+                    
+                ],
+                "arguments": [
+                    {
+                        "args": [
+                            "-v",
+                            "-a"
+                        ],
+                        "framework": {
+                            "names": [
+                                "com.novocode.junit.JUnitFramework"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "platform": {
+            "name": "jvm",
+            "config": {
+                "home": "C:\\Users\\arthe\\AppData\\Local\\Coursier\\cache\\arc\\https\\github.com\\adoptium\\temurin17-binaries\\releases\\download\\jdk-17.0.14%252B7\\OpenJDK17U-jdk_x64_windows_hotspot_17.0.14_7.zip\\jdk-17.0.14+7",
+                "options": [
+                    
+                ]
+            },
+            "mainClass": [
+                
+            ]
+        },
+        "resolution": {
+            "modules": [
+                {
+                    "organization": "org.junit.jupiter",
+                    "name": "junit-jupiter-params",
+                    "version": "5.4.2",
+                    "artifacts": [
+                        {
+                            "name": "junit-jupiter-params",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-params\\5.4.2\\junit-jupiter-params-5.4.2.jar"
+                        },
+                        {
+                            "name": "junit-jupiter-params",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-params\\5.4.2\\junit-jupiter-params-5.4.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-glfw",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-glfw",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-glfw\\3.3.3\\lwjgl-glfw-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-glfw",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-glfw\\3.3.3\\lwjgl-glfw-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.junit.platform",
+                    "name": "junit-platform-commons",
+                    "version": "1.4.2",
+                    "artifacts": [
+                        {
+                            "name": "junit-platform-commons",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\platform\\junit-platform-commons\\1.4.2\\junit-platform-commons-1.4.2.jar"
+                        },
+                        {
+                            "name": "junit-platform-commons",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\platform\\junit-platform-commons\\1.4.2\\junit-platform-commons-1.4.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl\\3.3.3\\lwjgl-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl\\3.3.3\\lwjgl-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-par",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-par",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-par\\3.3.3\\lwjgl-par-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-bgfx",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-bgfx",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-bgfx\\3.3.3\\lwjgl-bgfx-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-bgfx",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-bgfx\\3.3.3\\lwjgl-bgfx-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-vulkan",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-vulkan",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-vulkan\\3.3.3\\lwjgl-vulkan-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-vulkan",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-vulkan\\3.3.3\\lwjgl-vulkan-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-assimp",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-assimp",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-assimp\\3.3.3\\lwjgl-assimp-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-bgfx",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-bgfx",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-bgfx\\3.3.3\\lwjgl-bgfx-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apiguardian",
+                    "name": "apiguardian-api",
+                    "version": "1.0.0",
+                    "artifacts": [
+                        {
+                            "name": "apiguardian-api",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\apiguardian\\apiguardian-api\\1.0.0\\apiguardian-api-1.0.0.jar"
+                        },
+                        {
+                            "name": "apiguardian-api",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\apiguardian\\apiguardian-api\\1.0.0\\apiguardian-api-1.0.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-nuklear",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-nuklear",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nuklear\\3.3.3\\lwjgl-nuklear-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-assimp",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-assimp",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-assimp\\3.3.3\\lwjgl-assimp-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-assimp",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-assimp\\3.3.3\\lwjgl-assimp-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-nuklear",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-nuklear",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nuklear\\3.3.3\\lwjgl-nuklear-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-nuklear",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nuklear\\3.3.3\\lwjgl-nuklear-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-nanovg",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-nanovg",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nanovg\\3.3.3\\lwjgl-nanovg-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.opentest4j",
+                    "name": "opentest4j",
+                    "version": "1.1.1",
+                    "artifacts": [
+                        {
+                            "name": "opentest4j",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\opentest4j\\opentest4j\\1.1.1\\opentest4j-1.1.1.jar"
+                        },
+                        {
+                            "name": "opentest4j",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\opentest4j\\opentest4j\\1.1.1\\opentest4j-1.1.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-nanovg",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-nanovg",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nanovg\\3.3.3\\lwjgl-nanovg-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-nanovg",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-nanovg\\3.3.3\\lwjgl-nanovg-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.junit.platform",
+                    "name": "junit-platform-engine",
+                    "version": "1.4.2",
+                    "artifacts": [
+                        {
+                            "name": "junit-platform-engine",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\platform\\junit-platform-engine\\1.4.2\\junit-platform-engine-1.4.2.jar"
+                        },
+                        {
+                            "name": "junit-platform-engine",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\platform\\junit-platform-engine\\1.4.2\\junit-platform-engine-1.4.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-stb",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-stb",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-stb\\3.3.3\\lwjgl-stb-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-stb",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-stb\\3.3.3\\lwjgl-stb-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.junit.jupiter",
+                    "name": "junit-jupiter-api",
+                    "version": "5.4.2",
+                    "artifacts": [
+                        {
+                            "name": "junit-jupiter-api",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-api\\5.4.2\\junit-jupiter-api-5.4.2.jar"
+                        },
+                        {
+                            "name": "junit-jupiter-api",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-api\\5.4.2\\junit-jupiter-api-5.4.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-openal",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-openal",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-openal\\3.3.3\\lwjgl-openal-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-openal",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-openal\\3.3.3\\lwjgl-openal-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-glfw",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-glfw",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-glfw\\3.3.3\\lwjgl-glfw-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.joml",
+                    "name": "joml",
+                    "version": "1.10.5",
+                    "artifacts": [
+                        {
+                            "name": "joml",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\joml\\joml\\1.10.5\\joml-1.10.5.jar"
+                        },
+                        {
+                            "name": "joml",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\joml\\joml\\1.10.5\\joml-1.10.5-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-opengl",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-opengl",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-opengl\\3.3.3\\lwjgl-opengl-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-opengl",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-opengl\\3.3.3\\lwjgl-opengl-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-openal",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-openal",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-openal\\3.3.3\\lwjgl-openal-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-par",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-par",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-par\\3.3.3\\lwjgl-par-3.3.3.jar"
+                        },
+                        {
+                            "name": "lwjgl-par",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-par\\3.3.3\\lwjgl-par-3.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-stb",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-stb",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-stb\\3.3.3\\lwjgl-stb-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.junit.jupiter",
+                    "name": "junit-jupiter-engine",
+                    "version": "5.4.2",
+                    "artifacts": [
+                        {
+                            "name": "junit-jupiter-engine",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-engine\\5.4.2\\junit-jupiter-engine-5.4.2.jar"
+                        },
+                        {
+                            "name": "junit-jupiter-engine",
+                            "classifier": "sources",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-engine\\5.4.2\\junit-jupiter-engine-5.4.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl\\3.3.3\\lwjgl-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lwjgl",
+                    "name": "lwjgl-opengl",
+                    "version": "3.3.3",
+                    "artifacts": [
+                        {
+                            "name": "lwjgl-opengl",
+                            "classifier": "natives-windows",
+                            "path": "C:\\Users\\arthe\\.m2\\repository\\org\\lwjgl\\lwjgl-opengl\\3.3.3\\lwjgl-opengl-3.3.3-natives-windows.jar"
+                        }
+                    ]
+                }
+            ]
+        },
+        "tags": [
+            "library"
+        ]
+    }
+}

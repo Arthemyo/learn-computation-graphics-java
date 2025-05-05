@@ -1,7 +1,8 @@
 package game.test.com.game.voxel.model.mesh;
 
 import game.test.com.game.voxel.engine.Shader;
-import game.test.com.game.voxel.model.intefaces.Entity;
+import game.test.com.game.voxel.model.intefaces.Render;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
@@ -14,9 +15,8 @@ import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
-public class Mesh implements Entity {
+public class Mesh implements Render {
 
     private final List<Vertex> vertices;
     private final int[] indices;
@@ -99,8 +99,9 @@ public class Mesh implements Entity {
     }
 
     @Override
-    public void update() {
-
+    public void update(Shader shader) {
+        Matrix4f model = new Matrix4f().identity();
+        shader.setMat4("model", model);
     }
 
     @Override

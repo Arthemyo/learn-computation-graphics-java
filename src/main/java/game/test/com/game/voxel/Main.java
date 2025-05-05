@@ -1,6 +1,7 @@
 package game.test.com.game.voxel;
 
-import static java.lang.Math.max;
+import static game.test.com.game.voxel.model.shapes.Chunk.CHUNK_HEIGHT;
+import static game.test.com.game.voxel.model.shapes.Chunk.CHUNK_WIDTH;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
@@ -15,9 +16,7 @@ import java.nio.IntBuffer;
 import java.util.Objects;
 
 import game.test.com.game.voxel.engine.Camera;
-import game.test.com.game.voxel.engine.Model;
 import game.test.com.game.voxel.engine.Shader;
-import game.test.com.game.voxel.model.shapes.Chunk;
 import game.test.com.game.voxel.model.shapes.World;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -39,7 +38,7 @@ import org.lwjgl.system.MemoryStack;
 public class Main implements AutoCloseable, Runnable {
 
     private static final int windowWidth = 1080;
-    private static final int windowHeight = 800;
+    private static final int windowHeight = 720;
     public static long windowHandle;
 
     private Shader shader;
@@ -69,7 +68,7 @@ public class Main implements AutoCloseable, Runnable {
 
         world = new World();
 
-        camera = new Camera(new Vector3f((float) World.WORLD_WIDTH * Chunk.CHUNK_WIDTH / 2, Chunk.CHUNK_HEIGHT + 5, (float) World.WORLD_WIDTH * Chunk.CHUNK_WIDTH / 2),
+        camera = new Camera(new Vector3f((float) World.WORLD_SIZE * CHUNK_WIDTH / 2, CHUNK_HEIGHT + 5, (float) World.WORLD_SIZE * CHUNK_WIDTH / 2),
                 new Vector3f(0.0f, 1.0f, 0.0f),
                 -90.0f, -10.0f, 0.5f);
         camera.setCameraSpeed(10f);
@@ -134,6 +133,7 @@ public class Main implements AutoCloseable, Runnable {
         shader.setVec3("globalLight.diffuse", new Vector3f(diffuseColor));
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
+        world.update(shader);
         world.draw(shader);
         shader.unbind();
 
@@ -179,7 +179,6 @@ public class Main implements AutoCloseable, Runnable {
         });
 
         glEnable(GL30.GL_DEPTH_TEST);
-
         glEnable(GL_CULL_FACE);
 
         GLFW.glfwSetKeyCallback(windowHandle, (windowHandle, key, scancode, action, mods) -> {
